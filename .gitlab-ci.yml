@@ -6,6 +6,7 @@
 
 stages:
 - build
+- test
 
 
 # ##############
@@ -19,4 +20,13 @@ build:
     - macmini
   script:
     - cargo build
+
+
+test:
+  stage: test
+  tags:
+    - shell
+    - macmini
+  script:
+    - cargo test
 
