@@ -1,7 +1,15 @@
 [package]
-name = "rust"
+name = "Test"
 version = "0.1.0"
 authors = ["Filip Bucek <fbucek@invloop.cz>"]
 edition = "2018"
 
 [dependencies]
+
+[[bin]] 
+name="run"
+path="src/main.rs"
+
+[[bin]] 
+name="run2"
+path="src/main.2.rs"
