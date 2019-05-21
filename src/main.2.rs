@@ -1,17 +1,15 @@
 mod print;
-mod types;
 mod structs;
+mod types;
 
-use std::process;
 use std::env;
-
+use std::process;
 
 //#![deny(missing_docs)]
 //#![deny(unused_extern_crates)]
 fn main() {
-
     let args: Vec<String> = env::args().collect();
- 
+
     if args.len() < 2 {
         println!("Not enough arguments");
         process::exit(1);
