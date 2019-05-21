@@ -1,6 +1,6 @@
 pub fn run() {
     // Print to console
-    println!("Hello number {}", 34i64);
+    println!("Hello number 34");
 
     let years = 34i64;
     let mut name = "John";
@@ -8,7 +8,7 @@ pub fn run() {
     println!(
         "{name} likes to play baseball for ({year:b}) binary",
         name = name,
-        ear = years
+        year = years
     );
     name = "Mark";
     println!(
