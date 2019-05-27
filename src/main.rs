@@ -1,3 +1,4 @@
+
 mod print;
 mod structs;
 mod types;
@@ -5,9 +6,11 @@ mod types;
 use std::env;
 use std::process;
 
-//#![deny(missing_docs)]
-//#![deny(unused_extern_crates)]
+/// Main program to test multiple things
 fn main() {
+    #![deny(unused_extern_crates)]
+    #![deny(missing_docs)]
+    
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
