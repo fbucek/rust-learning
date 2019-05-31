@@ -1,14 +1,4 @@
-mod sound {
-    pub mod instrument {
-        pub fn clarinet() {
-            super::super::breathe_in();
-        }
-    }
-}
-
-fn breathe_in() {
-    println!("Breathe in");
-}
+mod sound;
 
 mod plant {
     pub struct Vegetable {
@@ -34,7 +24,7 @@ mod menu {
     }
 }
 
-use self::sound::instrument::clarinet;
+use sound::instrument::clarinet;
 use std::collections::HashMap;
 
 fn main() {
