@@ -1,3 +1,65 @@
+mod sound {
+    pub mod instrument {
+        pub fn clarinet() {
+            super::super::breathe_in();
+        }
+    }
+}
+
+fn breathe_in() {
+    println!("Breathe in");
+}
+
+mod plant {
+    pub struct Vegetable {
+        pub name: String,
+        id: i32,
+    }
+
+    impl Vegetable {
+        pub fn new(name: &str) -> Vegetable {
+            Vegetable {
+                name: String::from(name),
+                id: 1,
+            }
+        }
+    }
+}
+
+mod menu {
+    #[derive(PartialEq)] // necessary to _order1 == menu::Appetizer::Salad {
+    pub enum Appetizer {
+        Soup,
+        Salad,
+    }
+}
+
+use self::sound::instrument::clarinet;
+use std::collections::HashMap;
+
 fn main() {
-    println!("Hello, world!");
+    let mut v = plant::Vegetable::new("carrot");
+    v.name = String::from("mrkev");
+    println!("{} is delicious", v.name);
+
+    let _order1 = menu::Appetizer::Salad;
+    let order2 = menu::Appetizer::Soup;
+
+    match order2 {
+        menu::Appetizer::Salad => println!("Order 1 is: salad"),
+        _ => println!("Order 1 is Soup"),
+    }
+
+    if _order1 == menu::Appetizer::Salad {
+        println!("Apettizer is salad");
+    }
+
+    println!("Hello, Cargo!");
+    // sound::instruments::clarinet();
+    clarinet();
+
+    let mut map = HashMap::new();
+    map.insert(1, 2);
+
+    println!("{:?}", map);
 }
