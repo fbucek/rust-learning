@@ -1,4 +1,3 @@
-
 mod print;
 mod structs;
 mod types;
@@ -10,7 +9,7 @@ use std::process;
 fn main() {
     #![deny(unused_extern_crates)]
     #![deny(missing_docs)]
-    
+ 
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
