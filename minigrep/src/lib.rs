@@ -1,5 +1,5 @@
-use std::fs;
 use std::error::Error;
+use std::fs;
 
 pub struct Config {
     pub query: String,
@@ -15,8 +15,13 @@ impl Config {
 
         let query = args[1].clone();
         let filename = args[2].clone();
+        let case_sensitive = false;
 
-        Ok(Config { query, filename })
+        Ok(Config {
+            query,
+            filename,
+            case_sensitive,
+        })
     }
 }
 
@@ -53,7 +58,6 @@ pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a st
     results
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -66,10 +70,7 @@ Rust:
 safe, fast, productive.
 Pick three.";
 
-        assert_eq!(
-            vec!["safe, fast, productive."],
-            search(query, contents)
-        );
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
 
     #[test]
@@ -82,7 +83,7 @@ Pick there.
 Trust me.";
 
         assert_eq!(
-            vec!["Rust:", "Trust me."], 
+            vec!["Rust:", "Trust me."],
             search_case_insensitive(query, contents)
         );
     }
