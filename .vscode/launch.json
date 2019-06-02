@@ -20,7 +20,7 @@
                 }
             },
             "args": ["test"],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/minigrep"
         },
         {
             "type": "lldb",
