@@ -43,8 +43,15 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// 'a liftime means that contents string must live as long as retunred Vec
+/// Vec to contents string does not make sense
+/// `pub fn search<'a>` <-- have to declare lifetime
+/// `contents: &'a str` <-- assigning lifetime to passed argument
+/// `Vec<&'a str>       <-- using as output 
+/// Basically it telling compiler to retain `contents` as long as `Vec` lives
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    contents.lines()
+    contents
+        .lines()
         .filter(|line| line.contains(query))
         .collect()
 }
