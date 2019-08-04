@@ -1,11 +1,15 @@
 use std::io::Read;
 use std::*;
 
-pub fn read_from_file() -> Result<String, io::Error> {
-    let mut f = fs::File::open("Cargo.toml")?;
+pub fn read_from_file(filename: &str) -> Result<String, io::Error> {
+    let mut f = fs::File::open(&filename)?;
     let mut text = String::new();
     f.read_to_string(&mut text)?;
     Ok(text)
+}
+
+pub fn read_text(filename: &str) -> Result<String, Box<dyn error::Error>> {
+    Ok(read_from_file(&filename)?)
 }
 
 pub fn result_function(filename: &str) -> bool {
@@ -82,6 +86,24 @@ mod tests {
     use super::*;
 
     #[test]
+    fn read_from_file_test() {
+        // Must not panic and must read some bytes
+        assert!(read_from_file(&"Cargo.toml").unwrap().len() > 0);
+        // Must panic when unwrap
+        let res = std::panic::catch_unwind(|| panic_expect(&"nonexisting"));
+        assert!(res.is_err());
+
+        let text = read_from_file(&"nonexisting").unwrap_or(String::new());
+        assert_eq!(text.len(), 0);
+
+        let text = read_from_file(&"nonexisting").unwrap_or_else(|err| { println!("printing unwrap or else parameter:{:?}", err); return String::new(); });
+        assert_eq!(text.len(), 0);
+
+        let text = read_from_file(&"nonexisting").unwrap_or_else(|_| "".to_string() );
+        assert_eq!(text.len(), 0);
+    }
+
+    #[test]
     fn panic_test() {
         // Unwrap
         assert_eq!(panic_unwrap(&"Cargo.toml"), true);
@@ -91,7 +113,6 @@ mod tests {
         let res_expect = panic::catch_unwind(|| panic_expect(&"nonexisting"));
         assert!(res_expect.is_err());
     }
-
 
     #[test]
     fn result_test() {
