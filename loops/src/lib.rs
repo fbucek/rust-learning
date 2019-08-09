@@ -1,9 +1,10 @@
-struct Counter {
+#[derive(Default)]
+pub struct Counter {
     count: u32,
 }
 
 impl Counter {
-    fn new() -> Counter {
+    pub fn new() -> Counter {
         Counter { count: 0 }
     }
 }
@@ -12,8 +13,10 @@ impl Iterator for Counter {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
+        // Increment count 
         self.count += 1;
 
+        // Return increment until count < 6
         if self.count < 6 {
             Some(self.count)
         } else {
@@ -25,6 +28,18 @@ impl Iterator for Counter {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_default() {
+        let counter = Counter::default();
+        assert_eq!(counter.count, 0);
+    }
+
+    #[test]
+    fn test_new() {
+        let counter = Counter::new();
+        assert_eq!(counter.count, 0);
+    }
 
     #[test]
     fn zip_uneven_test() {
@@ -73,5 +88,25 @@ mod tests {
                                     .filter(|x| x % 3 == 0)
                                     .sum();
         assert_eq!(18, sum);
+    }
+
+    #[test]
+    fn test_iters() {
+        let all: Vec<u32> = Counter::new().collect();
+        assert_eq!(&vec![1,2,3,4,5], &all);
+        let skip: Vec<u32> = Counter::new().skip(1).collect();
+        assert_eq!(&vec![2,3,4,5], &skip);
+        
+        
+        let zip = &all.iter().zip(&skip);
+        let (unzip_a, unzip_b): (Vec<u32>, Vec<u32>) = zip.clone().unzip();
+        assert_eq!(&vec![1,2,3,4], &unzip_a);
+        assert_eq!(&vec![2,3,4,5], &unzip_b);
+        
+        let map: Vec<u32> = all.iter().zip(Counter::new().skip(1)).map(|(a, b)| a + b).collect();
+        assert_eq!(&vec![3, 5, 7, 9], &map);
+
+        // let iterzip = Counter::new().zip(Counter::new().skip(1));
+        //assert_eq!()
     }
 }
