@@ -1,5 +1,6 @@
 use std::io::Read;
 use std::*;
+//use tempfile::tempdir;
 
 pub fn read_from_file(filename: &str) -> Result<String, io::Error> {
     let mut f = fs::File::open(&filename)?;
@@ -39,7 +40,7 @@ pub fn option_function(filename: &str) -> bool {
     let f: result::Result<std::fs::File, std::io::Error> = match f {
         Ok(file) => Ok(file),
         Err(error) => {
-            eprintln!("Typeed let: Not possible to open file {:?}", error);
+            eprintln!("Typed let: Not possible to open file {:?}", error);
             Err(error)
             //panic!("Problem opening ifle: {:?}", error)
         },
@@ -122,12 +123,23 @@ mod tests {
 
     #[test]
     fn option_test() {
-        assert_eq!(option_function(&"Cargo.toml"), true);
-        let nonexistfile = "xxxxxx.toml";
+        // Have to test file in temporary folder
+        let filename = "Cargo.toml";
+        assert_eq!(option_function(&filename), true);
+        
+
+        // Create a directory inside of `std::env::temp_dir()`.
+        let dir = tempfile::tempdir().unwrap();
+        let temppath = dir.path().join("xxxxxx.toml");
+        let nonexistfile = &temppath.to_str().unwrap();
         assert_eq!(path::Path::new(&nonexistfile).exists(), false);
         assert_eq!(option_function(&nonexistfile), true);
+        assert_eq!(path::Path::new(&nonexistfile).exists(), true);
+        
         // Now have to cleanup
         assert!(fs::remove_file(&nonexistfile).is_ok());
+        // At the end created file must not exists
+        assert_eq!(path::Path::new(&nonexistfile).exists(), false);
     }
 }
 

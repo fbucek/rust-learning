@@ -3,6 +3,7 @@ name = "error"
 version = "0.1.0"
 authors = ["Filip Bucek <fbucek@invloop.cz>"]
 edition = "2018"
+workspace = ".."
 
 [dependencies]
 

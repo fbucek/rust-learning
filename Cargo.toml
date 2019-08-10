@@ -1,0 +1,24 @@
+[workspace]
+
+members = [
+    "autotests",
+    "closures",
+    "coins",
+    "collections",
+    "error",
+    "error_handling",
+    "generic-types",
+    "guessing_game",
+    "hashmap",
+    "hello_cargo",
+    "lifetimes",
+    "loops",
+    "minigrep",
+    "person",
+    "reference-cycle",
+    "smart-pointers",
+    "strings",
+    #"trait_bench", # nightly only
+    #"trait_bench_orig", # nightly only
+    "traits",
+]
