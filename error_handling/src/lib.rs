@@ -23,7 +23,7 @@ pub fn result_function(filename: &str) -> bool {
             eprintln!("Typeed let: Not possible to open file {:?}", error);
             Err(error)
             //panic!("Problem opening ifle: {:?}", error)
-        },
+        }
     };
 
     // this would be for results
@@ -34,7 +34,7 @@ pub fn result_function(filename: &str) -> bool {
 }
 
 pub fn option_function(filename: &str) -> bool {
-  let f: result::Result<std::fs::File, std::io::Error> = fs::File::open(&filename);
+    let f: result::Result<std::fs::File, std::io::Error> = fs::File::open(&filename);
 
     // Now I can reprocces error and packi again into same Result
     let f: result::Result<std::fs::File, std::io::Error> = match f {
@@ -43,7 +43,7 @@ pub fn option_function(filename: &str) -> bool {
             eprintln!("Typed let: Not possible to open file {:?}", error);
             Err(error)
             //panic!("Problem opening ifle: {:?}", error)
-        },
+        }
     };
 
     let f = match f {
@@ -52,17 +52,17 @@ pub fn option_function(filename: &str) -> bool {
             io::ErrorKind::NotFound => match fs::File::create(&filename) {
                 Ok(fc) => Some(fc),
                 Err(e) => {
-                    eprintln!("Problem creating file {:?}",e);
+                    eprintln!("Problem creating file {:?}", e);
                     None
                 }
             },
             other_error => {
                 eprintln!("Problem opening file {:?}", other_error);
                 None
-            },
+            }
         },
     };
-    
+
     if f.is_none() {
         return false;
     }
@@ -81,7 +81,6 @@ pub fn panic_expect(filename: &str) -> bool {
     return true;
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,10 +96,13 @@ mod tests {
         let text = read_from_file(&"nonexisting").unwrap_or(String::new());
         assert_eq!(text.len(), 0);
 
-        let text = read_from_file(&"nonexisting").unwrap_or_else(|err| { println!("printing unwrap or else parameter:{:?}", err); return String::new(); });
+        let text = read_from_file(&"nonexisting").unwrap_or_else(|err| {
+            println!("printing unwrap or else parameter:{:?}", err);
+            return String::new();
+        });
         assert_eq!(text.len(), 0);
 
-        let text = read_from_file(&"nonexisting").unwrap_or_else(|_| "".to_string() );
+        let text = read_from_file(&"nonexisting").unwrap_or_else(|_| "".to_string());
         assert_eq!(text.len(), 0);
     }
 
@@ -109,7 +111,7 @@ mod tests {
         // Unwrap
         assert_eq!(panic_unwrap(&"Cargo.toml"), true);
         let result = std::panic::catch_unwind(|| panic_unwrap(&"nonexisiting"));
-        assert!(result.is_err()); 
+        assert!(result.is_err());
         // Expect
         let res_expect = panic::catch_unwind(|| panic_expect(&"nonexisting"));
         assert!(res_expect.is_err());
@@ -126,7 +128,6 @@ mod tests {
         // Have to test file in temporary folder
         let filename = "Cargo.toml";
         assert_eq!(option_function(&filename), true);
-        
 
         // Create a directory inside of `std::env::temp_dir()`.
         let dir = tempfile::tempdir().unwrap();
@@ -135,11 +136,10 @@ mod tests {
         assert_eq!(path::Path::new(&nonexistfile).exists(), false);
         assert_eq!(option_function(&nonexistfile), true);
         assert_eq!(path::Path::new(&nonexistfile).exists(), true);
-        
+
         // Now have to cleanup
         assert!(fs::remove_file(&nonexistfile).is_ok());
         // At the end created file must not exists
         assert_eq!(path::Path::new(&nonexistfile).exists(), false);
     }
 }
-

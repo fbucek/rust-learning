@@ -1,8 +1,8 @@
 #[derive(Debug)]
 pub enum UsState {
-  Alabama, 
-  Alaska,
-  Hawaii,
+    Alabama,
+    Alaska,
+    Hawaii,
 }
 
 pub enum Coin {
@@ -15,14 +15,14 @@ pub enum Coin {
 pub fn value_in_cents(coin: Coin) -> u8 {
     match coin {
         Coin::Penny => {
-          println!("Lucky Penny");
-          1
+            println!("Lucky Penny");
+            1
         }
         Coin::Nickel => 5,
         Coin::Dime => 10,
         Coin::Quarter(state) => {
-          println!("State quarter from {:?}!", state);
-          25
-        }  
+            println!("State quarter from {:?}!", state);
+            25
+        }
     }
 }

@@ -33,7 +33,7 @@ impl Summary for Tweet {
     fn summarize_author(&self) -> String {
         format!("@{}", self.username)
     }
-    
+
     fn summarize(&self) -> String {
         format!("{}: {}", self.username, self.content)
     }
@@ -54,7 +54,6 @@ fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
 
     largest
 }
-
 
 fn main() {
     let number_list = vec![34, 50, 25, 100, 65];
@@ -87,13 +86,13 @@ fn main() {
         author: String::from("Amundsen"),
         content: String::from("Wrecked ship"),
     };
-    
+
     println!("New article available! {}", article.summarize());
-    
+
     notify(&article2);
 
     let mut v: Vec<Box<&Summary>> = Vec::new();
-    
+
     v.push(Box::new(&tweet));
     v.push(Box::new(&article));
 
@@ -114,5 +113,4 @@ fn main() {
         // notify(sum);
         count += 1;
     }
-
 }

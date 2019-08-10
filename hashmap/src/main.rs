@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 fn hash_from_vectors() {
     let teams = vec![String::from("Blue"), String::from("Green")];
-    let initial_scores = vec![10,50];
+    let initial_scores = vec![10, 50];
 
     let scores: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();
 
@@ -22,7 +22,6 @@ fn invalid_maps() {
 
     // field_name was moved into map
     // println!("{}", field_name); <-- error
-
 }
 
 fn or_insert() {
@@ -60,10 +59,10 @@ fn main() {
         println!("{:?}", pair);
     }
 
-    let vec = vec![1,2];
+    let vec = vec![1, 2];
 
     assert_eq!(vec[0], 1);
-    
+
     hash_from_vectors();
 
     invalid_maps();

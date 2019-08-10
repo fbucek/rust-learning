@@ -16,8 +16,14 @@ mod tests {
 
     #[test]
     fn can_hold_test() {
-        let larger = Rectangle { width: 8, height: 7 };
-        let smaller = Rectangle { width: 5, height: 1 };
+        let larger = Rectangle {
+            width: 8,
+            height: 7,
+        };
+        let smaller = Rectangle {
+            width: 5,
+            height: 1,
+        };
 
         assert!(larger.can_hold(&smaller));
     }
@@ -26,7 +32,7 @@ mod tests {
     fn it_works() {
         assert_eq!(2 + 2, 4);
     }
-    
+
     #[test]
     fn exploration() {
         assert_eq!(2 + 2, 4);

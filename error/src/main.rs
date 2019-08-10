@@ -1,8 +1,8 @@
-use std::io;
-use std::io::Read;
-use std::fs::File;
-use std::io::ErrorKind;
 use std::fs;
+use std::fs::File;
+use std::io;
+use std::io::ErrorKind;
+use std::io::Read;
 
 #[allow(dead_code)]
 fn panic_rust() {
@@ -15,7 +15,7 @@ fn better_open() {
 
     let f = File::open(&filename).unwrap_or_else(|error| {
         if error.kind() == ErrorKind::NotFound {
-            File::create(&filename).unwrap_or_else(|error| { 
+            File::create(&filename).unwrap_or_else(|error| {
                 panic!("Tried to create file but there was problem: {:?}", error);
             })
         } else {
@@ -57,7 +57,7 @@ fn read_username_short() -> Result<String, io::Error> {
 fn read_even_shorter() -> Result<String, io::Error> {
     let mut s = String::new();
 
-    // 
+    //
     File::open("hello.txt")?.read_to_string(&mut s)?;
 
     Ok(s)
@@ -73,20 +73,22 @@ fn main() {
         Err(error) => match error.kind() {
             ErrorKind::NotFound => match File::create("hello.txt") {
                 Ok(fc) => fc,
-                Err(e) => panic!("Try to create file but there was problem
-                    {:?}", e),
+                Err(e) => panic!(
+                    "Try to create file but there was problem
+                    {:?}",
+                    e
+                ),
             },
             other_error => {
                 panic!("There was a problem opening file: {:?}", other_error)
                 //println!("no file {:?}", other_error);
                 //println!("no file {}", other_error.raw_os_error().unwrap());
                 //panic!("There was problem opening file: {:?}", error)
-            },
+            }
         },
     };
 
     println!("{:?}", f);
-
 
     //better_open(); <-- panic
 
@@ -106,12 +108,9 @@ fn main() {
     //println!("File content is: {}", &s);
     read_even_shorter();
 
-    // shortest method is 
+    // shortest method is
     let mut s = fs::read_to_string("hello.txt");
     if (s.is_ok()) {
         println!("Shortes method: {}", s.unwrap().trim());
     }
-
-
-
 }

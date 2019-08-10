@@ -13,7 +13,7 @@ impl Iterator for Counter {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        // Increment count 
+        // Increment count
         self.count += 1;
 
         // Return increment until count < 6
@@ -64,7 +64,7 @@ mod tests {
     }
 
     #[test]
-    fn filter_test() { 
+    fn filter_test() {
         let a = [0i32, 1, 2];
         //assert!(&a[0].is_positive());
 
@@ -77,33 +77,35 @@ mod tests {
         let mut iter2 = a.iter().filter(|&x| *x > 1);
         assert_eq!(iter2.next(), Some(&2));
         assert_eq!(iter2.next(), None);
-
-
     }
 
     #[test]
     fn using_other_iterator_trait_methods() {
-        let sum: u32 = Counter::new().zip(Counter::new().skip(1))
-                                    .map(|(a, b)| a * b)
-                                    .filter(|x| x % 3 == 0)
-                                    .sum();
+        let sum: u32 = Counter::new()
+            .zip(Counter::new().skip(1))
+            .map(|(a, b)| a * b)
+            .filter(|x| x % 3 == 0)
+            .sum();
         assert_eq!(18, sum);
     }
 
     #[test]
     fn test_iters() {
         let all: Vec<u32> = Counter::new().collect();
-        assert_eq!(&vec![1,2,3,4,5], &all);
+        assert_eq!(&vec![1, 2, 3, 4, 5], &all);
         let skip: Vec<u32> = Counter::new().skip(1).collect();
-        assert_eq!(&vec![2,3,4,5], &skip);
-        
-        
+        assert_eq!(&vec![2, 3, 4, 5], &skip);
+
         let zip = &all.iter().zip(&skip);
         let (unzip_a, unzip_b): (Vec<u32>, Vec<u32>) = zip.clone().unzip();
-        assert_eq!(&vec![1,2,3,4], &unzip_a);
-        assert_eq!(&vec![2,3,4,5], &unzip_b);
-        
-        let map: Vec<u32> = all.iter().zip(Counter::new().skip(1)).map(|(a, b)| a + b).collect();
+        assert_eq!(&vec![1, 2, 3, 4], &unzip_a);
+        assert_eq!(&vec![2, 3, 4, 5], &unzip_b);
+
+        let map: Vec<u32> = all
+            .iter()
+            .zip(Counter::new().skip(1))
+            .map(|(a, b)| a + b)
+            .collect();
         assert_eq!(&vec![3, 5, 7, 9], &map);
 
         // let iterzip = Counter::new().zip(Counter::new().skip(1));

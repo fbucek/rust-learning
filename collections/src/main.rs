@@ -1,7 +1,7 @@
 fn vecfunct() {
     let mut v = vec![1, 2, 3, 4, 5];
 
-    let third: &i32 = &v[2]; // 
+    let third: &i32 = &v[2]; //
     println!("Third element is {}", third);
     println!("Third element is {}", third);
 
@@ -20,8 +20,7 @@ fn vecfunct() {
 
     // first is used after vector could be changed -> v.push -> new allocation possible
     // -> new allocation would invalidate reference ( which is forbiden )
-    // println!("The first element is: {}", first); 
-
+    // println!("The first element is: {}", first);
 }
 
 fn iterating() {
@@ -34,7 +33,7 @@ fn iterating() {
     for i in &mut v {
         *i += 50;
     }
-    
+
     for i in &v {
         println!("{}", i);
     }
@@ -51,9 +50,8 @@ fn vector_with_enum() {
         SpreadsheetCell::Int(3),
         SpreadsheetCell::Text(String::from("blue")),
         SpreadsheetCell::Float(10.12),
-    ];  
+    ];
 }
-
 
 fn main() {
     let mut v: Vec<i32> = Vec::new();

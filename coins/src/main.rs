@@ -1,9 +1,6 @@
 mod coin;
 
-use coin::{
-    Coin,
-};
-
+use coin::Coin;
 
 fn plus_one(x: Option<i32>) -> Option<i32> {
     match x {
@@ -11,7 +8,6 @@ fn plus_one(x: Option<i32>) -> Option<i32> {
         Some(i) => Some(i + 1),
     }
 }
-
 
 fn main() {
     let some_u8_value: u8 = 3;
@@ -34,7 +30,6 @@ fn main() {
         _ => count += 1,
     }
 
-
     {
         let coin_coin = coin::Coin::Quarter(coin::UsState::Hawaii);
         let mut count = 0;
@@ -45,13 +40,11 @@ fn main() {
         }
     }
 
-
     let five = Some(5);
     let six = plus_one(five);
     let none = plus_one(None);
 
     println!("five {}, six {}", five.unwrap(), six.unwrap());
-
 
     let penny = Coin::Penny;
     let quarter = Coin::Quarter(coin::UsState::Hawaii);
@@ -61,4 +54,3 @@ fn main() {
 
     println!("Hello, world!");
 }
-

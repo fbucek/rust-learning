@@ -13,7 +13,6 @@ fn multi_language() {
     vec.push(String::from("Здравствуйте"));
     vec.push(String::from("Hola"));
 
-
     for str in &vec {
         println!("{}", str);
     }
@@ -31,9 +30,7 @@ fn multi_language() {
     println!("String lenght");
     println!("{} byte len is: {} bytes", hindi, hindi.len());
     println!("{} char len is: {:?} bytes", hindi, hindi.chars());
-
 }
-
 
 fn main() {
     let mut s = String::new();
