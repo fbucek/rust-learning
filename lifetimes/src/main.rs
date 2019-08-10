@@ -31,7 +31,7 @@ fn main() {
     println!("Result is: {}", result);
 
     let novel = String::from("Novel text. Then next sentence");
-    let first_sentence = novel.split(".").next().expect("Count not find a '.'");
+    let first_sentence = novel.split('.').next().expect("Count not find a '.'");
 
     let i = ImportantExcerpt {
         part: first_sentence,

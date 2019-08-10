@@ -15,7 +15,7 @@ fn vecfunct() {
     //println!("does_not_exist contains: {:?}", does_not_exist);
     //let does_not_exist = &v[100];
 
-    let first = &v[0]; // <- problem with print after v.push(5);
+    let _first = &v[0]; // <- problem with print after v.push(5);
     v.push(5);
 
     // first is used after vector could be changed -> v.push -> new allocation possible
@@ -46,7 +46,7 @@ fn vector_with_enum() {
         Text(String),
     }
 
-    let row = vec![
+    let _row = vec![
         SpreadsheetCell::Int(3),
         SpreadsheetCell::Text(String::from("blue")),
         SpreadsheetCell::Float(10.12),

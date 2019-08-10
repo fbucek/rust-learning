@@ -6,6 +6,3 @@ edition = "2018"
 workspace = ".."
 
 [dependencies]
-
-[profile.release]
-#panic = 'abort'

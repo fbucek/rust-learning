@@ -110,7 +110,7 @@ fn main() {
 
     // shortest method is
     let mut s = fs::read_to_string("hello.txt");
-    if (s.is_ok()) {
+    if s.is_ok() {
         println!("Shortes method: {}", s.unwrap().trim());
     }
 }

@@ -15,7 +15,7 @@ pub struct NewsArticle {
 
 impl Summary for NewsArticle {
     fn summarize_author(&self) -> String {
-        format!("{}", self.author)
+        self.author.to_string()
     }
     fn summarize(&self) -> String {
         format!("{}, by {} ({})", self.headline, self.author, self.location)
@@ -96,21 +96,17 @@ fn main() {
     v.push(Box::new(&tweet));
     v.push(Box::new(&article));
 
-    let mut count = 0;
-    for sum in &v {
+    for (count, sum) in v.iter().enumerate() {
         println!("{} {}", count, sum.summarize());
         // notify(sum);
-        count += 1;
     }
 
     let mut vec: Vec<&Summary> = Vec::new();
     vec.push(&tweet);
     vec.push(&article);
 
-    let mut count = 0; // <-- shadowing count
-    for sum in &vec {
+    for (count, sum) in vec.iter().enumerate() {
         println!("{}: {}", count, sum.summarize());
         // notify(sum);
-        count += 1;
     }
 }

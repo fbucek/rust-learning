@@ -18,9 +18,8 @@ fn main() {
     }
 
     let some_value = Some(3u8);
-    match some_value {
-        Some(3) => println!("three second"),
-        _ => (),
+    if let Some(3) = some_value {
+        println!("three second")
     }
 
     let mut count = 0;
@@ -38,12 +37,14 @@ fn main() {
         } else {
             count += 1;
         }
+        println!("count is: {}", count);
     }
 
     let five = Some(5);
     let six = plus_one(five);
-    let none = plus_one(None);
+    let _none = plus_one(None);
 
+    println!("count is: {}", count);
     println!("five {}, six {}", five.unwrap(), six.unwrap());
 
     let penny = Coin::Penny;
