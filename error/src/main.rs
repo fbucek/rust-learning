@@ -13,7 +13,7 @@ fn panic_rust() {
 fn better_open() {
     let filename = "hello_better.txt";
 
-    let f = File::open(&filename).unwrap_or_else(|error| {
+    let _f = File::open(&filename).unwrap_or_else(|error| {
         if error.kind() == ErrorKind::NotFound {
             File::create(&filename).unwrap_or_else(|error| {
                 panic!("Tried to create file but there was problem: {:?}", error);
@@ -25,8 +25,9 @@ fn better_open() {
     });
 }
 
+#[allow(dead_code)]
 fn expect_open() {
-    let f = File::open("hello_epect.txt").expect("Failed to open file hello_epect.txt");
+    let _f = File::open("hello_epect.txt").expect("Failed to open file hello_epect.txt");
 }
 
 fn read_username_from_file() -> Result<String, io::Error> {
@@ -94,7 +95,7 @@ fn main() {
 
     //expect_open();
 
-    read_username_from_file();
+    read_username_from_file().unwrap();
 
     match read_username_short() {
         Ok(s) => println!("{}", s.trim()),
@@ -106,10 +107,10 @@ fn main() {
         println!("Unwrapped s: {}", s.unwrap().trim());
     }
     //println!("File content is: {}", &s);
-    read_even_shorter();
+    read_even_shorter().unwrap();
 
     // shortest method is
-    let mut s = fs::read_to_string("hello.txt");
+    let s = fs::read_to_string("hello.txt");
     if s.is_ok() {
         println!("Shortes method: {}", s.unwrap().trim());
     }

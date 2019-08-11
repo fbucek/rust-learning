@@ -26,3 +26,15 @@ pub fn value_in_cents(coin: Coin) -> u8 {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_enum() {
+        //let coint = Coin::Quarter(UsState::Alabama));
+        assert_eq!(value_in_cents(Coin::Quarter(UsState::Alabama)), 25);
+    }
+}

@@ -21,7 +21,7 @@ fn generate_workout(intensity: u32, random_number: u32) {
         num
     };
 
-    let expensive_result = simulated_expensive_calculation(intensity);
+    let _expensive_result = simulated_expensive_calculation(intensity);
 
     if intensity < 25 {
         println!("Today, do {} pushups!", expensive_closure(intensity));

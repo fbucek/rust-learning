@@ -6,6 +6,7 @@ fn test() -> i32 {
     5
 }
 
+#[derive(Debug)]
 struct Soap {
     username: String,
     email: String,
@@ -21,6 +22,7 @@ fn main() {
         sign_in_count: 1,
     };
 
+    println!("Soup is: {:?}", user1);
     println!("test return: {}", test());
 
     println!("Guess the number!");

@@ -12,8 +12,6 @@ fn hash_from_vectors() {
 }
 
 fn invalid_maps() {
-    use std::collections::HashMap;
-
     let field_name = String::from("Favorite color");
     let field_value = String::from("Blue");
 
@@ -25,8 +23,6 @@ fn invalid_maps() {
 }
 
 fn or_insert() {
-    use std::collections::HashMap;
-
     let mut scores = HashMap::new();
     scores.insert(String::from("Blue"), 10);
 

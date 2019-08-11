@@ -11,6 +11,7 @@ struct ImportantExcerpt<'a> {
     part: &'a str,
 }
 
+#[allow(dead_code)]
 fn first_world(s: &str) -> &str {
     let bytes = s.as_bytes();
 
