@@ -21,4 +21,5 @@ members = [
     #"trait_bench", # nightly only
     #"trait_bench_orig", # nightly only
     "traits",
+    "threads",
 ]
