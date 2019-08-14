@@ -1,0 +1,16 @@
+[package]
+name = "testing"
+version = "0.1.0"
+authors = ["Filip Bucek <fbucek@invloop.cz>"]
+edition = "2018"
+workspace = ".."
+
+[lib]
+name = "testlib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "testing"
+path = "src/main.rs"
+
+[dependencies]
