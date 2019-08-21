@@ -1,6 +1,7 @@
 mod sound;
 
 mod plant {
+    #[derive(Debug)]
     pub struct Vegetable {
         pub name: String,
         id: i32,
@@ -31,6 +32,7 @@ fn main() {
     let mut v = plant::Vegetable::new("carrot");
     v.name = String::from("mrkev");
     println!("{} is delicious", v.name);
+    println!("{:?}", v);
 
     let _order1 = menu::Appetizer::Salad;
     let order2 = menu::Appetizer::Soup;
