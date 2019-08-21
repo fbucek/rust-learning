@@ -1,5 +1,5 @@
 [package]
-name = "threadlib"
+name = "threads"
 version = "0.1.0"
 authors = ["Filip Bucek <fbucek@invloop.cz>"]
 edition = "2018"
@@ -13,5 +13,10 @@ path = "src/lib.rs"
 [[bin]]
 name = "threads"
 path = "src/main.rs"
+
+[[bin]]
+name = "thread-msg"
+path = "src/thread-msg.rs"
+
 
 [dependencies]

@@ -227,7 +227,7 @@ name = "testing"
 version = "0.1.0"
 
 [[package]]
-name = "threadlib"
+name = "threads"
 version = "0.1.0"
 
 [[package]]
