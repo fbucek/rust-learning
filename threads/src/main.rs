@@ -15,13 +15,10 @@ fn main() {
         }
     });
 
-    //drop(v);
-
     handle.join().unwrap();
 
     for i in 1..5 {
         println!("Nubmer {}, from main thread", i);
         thread::sleep(Duration::from_millis(1));
     }
-
 }

@@ -18,5 +18,13 @@ path = "src/main.rs"
 name = "thread-msg"
 path = "src/thread-msg.rs"
 
+[[bin]]
+name = "actix"
+path = "src/actix.rs"
+
+[[bin]]
+name = "thread-example"
+path = "src/thread-example.rs"
 
 [dependencies]
+actix-web = "1.0.5"

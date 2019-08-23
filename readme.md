@@ -15,6 +15,11 @@
 
 [Rust Tips and Tricks :: Jon Gjengset](https://thesquareplanet.com/blog/rust-tips-and-tricks/)
 
-## References
+## Actix 
 
-[Web framework comparsion](https://github.com/flosse/rust-web-framework-comparison)
+### How to create modular actix server
+[Modular actix system](https://github.com/actix/actix-web/issues/408#issuecomment-406994821)
+
+### Alternative to Elasticsearch
+
+[Sonic](https://notamonadtutorial.com/sonic-a-minimalist-alternative-to-elasticsearch-written-in-rust-7f3612ecb47b)
