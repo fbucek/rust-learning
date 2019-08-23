@@ -23,6 +23,11 @@ name = "actix"
 path = "src/actix.rs"
 
 [[bin]]
+name = "actix-short"
+path = "src/actix-short.rs"
+
+
+[[bin]]
 name = "thread-example"
 path = "src/thread-example.rs"
 
