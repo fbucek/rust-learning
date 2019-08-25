@@ -24,6 +24,29 @@ pub struct Runner {
     pub running: AtomicBool,
 }
 
+impl Runner {
+    fn start(&self) {
+        loop {
+            if self.stop.load(Ordering::Relaxed) {
+                println!("Control: Runner stop");
+                self.running.swap(false, Ordering::Relaxed);
+                break;
+            }
+            thread::sleep(Duration::from_millis(1000));
+
+            let cmd = Command::new("git")
+                .arg("--version")
+                .output()
+                .expect("Not possible to run comnad");
+            
+            println!("Process status: {}", cmd.status);
+            let out = String::from_utf8_lossy(&cmd.stdout);
+
+            println!("Runner: output: {}", out);
+        }
+    }
+}
+
 impl Control {
     fn run(&self) -> Result<String, &'static str> {
         if self.runner.running.load(Ordering::Relaxed) {
@@ -33,24 +56,7 @@ impl Control {
             self.runner.running.swap(true, Ordering::Relaxed);
             let runner = self.runner.clone();
             thread::spawn(move || {
-                loop {
-                    if runner.stop.load(Ordering::Relaxed) {
-                        println!("Control: Runner stop");
-                        runner.running.swap(false, Ordering::Relaxed);
-                        break;
-                    }
-                    thread::sleep(Duration::from_millis(1000));
-
-                    let cmd = Command::new("git")
-                        .arg("--version")
-                        .output()
-                        .expect("Not possible to run comnad");
-                    
-                    println!("Process status: {}", cmd.status);
-                    let out = String::from_utf8_lossy(&cmd.stdout);
-
-                    println!("Runner: output: {}", out);
-                }
+                runner.start();
             });
             Ok(String::from("Control: Runner started"))
         }
