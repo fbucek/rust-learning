@@ -15,9 +15,10 @@
 
 [Rust Tips and Tricks :: Jon Gjengset](https://thesquareplanet.com/blog/rust-tips-and-tricks/)
 
-## Actix 
+## Actix
 
 ### How to create modular actix server
+
 [Modular actix system](https://github.com/actix/actix-web/issues/408#issuecomment-406994821)
 
 ### Alternative to Elasticsearch
