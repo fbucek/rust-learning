@@ -24,6 +24,7 @@ pub struct Runner {
     pub running: AtomicBool,
 }
 
+/// Runner -> have to add some documentations
 impl Runner {
     fn start(&self) {
         loop {

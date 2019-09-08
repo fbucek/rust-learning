@@ -87,7 +87,10 @@ fn index(
 fn stop(
     data: web::Data<Arc<Control>>,
 ) -> impl Responder {
-    data.stop();
+    match data.stop() {
+        Ok(_) => println!("Data succesfully stopped"),
+        Err(err) => println!("Problemt stopping thread {:?}", err),
+    }
     // Stopping data by using shared struct Runner
     // data.stop.swap(true, Ordering::Relaxed);
     // //
@@ -138,29 +141,10 @@ fn main() -> std::io::Result<()> {
                 break; // ends the loop
 
             }
-            //let message = receiver.try_recv();
-            // if message.is_ok() && message.unwrap() == RunnerEvent {
-            //     println!("Message 'end' ending thread");
-            //     break; // ends the loop
-            // }
             thread::sleep(Duration::from_millis(1000));
             println!("Every seconds print");
         }
-        // let data = data.clone();
-        // data.value.
-        // let vals = vec![
-        //     String::from("hi"),
-        //     String::from("from"),
-        //     String::from("the"),
-        //     String::from("thread"),
-        // ];
-
-        // for val in vals {
-        //     tx.send(val).unwrap();
-        // }
     });
-
-
 
     println!("http://localhost:8091/32/filip/index.html");
 
