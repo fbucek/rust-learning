@@ -10,12 +10,17 @@ fn main () {
     assert_eq!(x.read().unwrap(), "response");
     assert_eq!(y.read().unwrap(), "repsonse");
 
-    let x = TcpStream::connect("127.0.0.1")
+    let fut_x = TcpStream::connect("127.0.0.1")
         .and_then(|c| c.write("info"))
         .and_then(|c| c.read())
         .and_then(|(c, b)|  b == "response");
-    println!("{:?}", fut);
-        
+    println!("{:?}", fut_x);
 
+    let a: Executor;
+    let x = a.run(fut_x);
+    let y = a.run(fut_y);
 
+    a.spawn(fut_x.and_then(|eq| assert!(eq)));
+    a.spawn(fut_y.and_then(|eq| assert!(eq)));
+    a.block_on_all();
 }
