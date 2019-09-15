@@ -246,6 +246,10 @@ name = "autotests"
 version = "0.1.0"
 
 [[package]]
+name = "await-async"
+version = "0.1.0"
+
+[[package]]
 name = "awc"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
