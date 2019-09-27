@@ -18,14 +18,6 @@ struct Check {
 }
 
 impl Check {
-    pub fn new<S>(port: S) -> Self where S: Into<String> {
-    // pub fn new(port: str) -> Self {
-        Check { 
-            port: port.into(),
-            text: std::sync::Mutex::new(String::new()),
-        }
-    }
-
     pub fn arc_new<S>(port: S) -> Arc<Self> where S: Into<String> {
     // pub fn new(port: str) -> Self {
         Arc::new(Check { 
@@ -33,23 +25,6 @@ impl Check {
             text: Mutex::new(String::new()),
         })
     }
-
-    pub async fn check(host: &str, port: &str) -> Result<(), String> {
-        println!("Will check {}{}", host, port);
-
-        let addr = match format!("{}:{}", host, port).parse::<SocketAddr>() {
-            Ok(address) => address,
-            Err(err) => { return Err("Not possible to parse address".to_string()) },
-        };
-
-        println!("Will check url: {}", &addr);
-        let res = tokio::net::TcpStream::connect(&addr).await;
-        if res.is_err() {
-            println!("Not possible to connect: {:?}", res.err());
-            return Err(format!("not possible to connect to: {}", &addr).to_string());
-        }
-        Ok(())
-    } 
 
     pub async fn check_member(self: &Self, host: &str) -> Result<(), String> {
         //println!("Will check {}:{}", host, &self.port);
@@ -78,20 +53,6 @@ impl Check {
 
 // @see https://rust-lang.github.io/async-book/print.html
 fn main () -> Result<(), Box<dyn std::error::Error>> {
-
-    
-
-    let mut check_vec = vec![]; // Check::arc_new("23"), Check::arc_new("4545") ];
-
-    for n in 1..80 {
-        check_vec.push(Check::arc_new(n.to_string()));
-    }
-    println!("Array count: {}", check_vec.len());
-
-
-    
-    //let arc_vec = std::sync::Arc::new(check_vec);
-
     //////////////////////////////
     // MacOS tcp timeout
     // Default timeout value: 60s
@@ -105,39 +66,24 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     // sysctl net.ipv4.tcp_syn_retries # default 6
     // sudo sysctl net.ipv4.tcp_syn_retries=1
 
+    // Prepare port check    
+    let mut check_vec = vec![]; // Check::arc_new("23"), Check::arc_new("4545") ];
+    for n in 1..8000 {
+        check_vec.push(Check::arc_new(n.to_string()));
+    }
+    println!("Array count: {}", check_vec.len());
+
+
     let rt = tokio::runtime::Runtime::new().unwrap();
 
-    // 1min 15sec
-    //let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
-    let mut ports = vec![ "22" ];
-    ports.remove(0);
-
-    // let vec_cloned = arc_vec.clone();
-    // let vec_cloned_2 = arc_vec.clone();
-
-    let mut futures = Vec::new();
-
-    rt.block_on(async {
-        for check in &check_vec {
-            let clone = check.clone();
-            //let port = check.port.clone();
-            let fut = tokio::spawn(async move {
-                // let locked = clone.lock().unwrap();
-                // locked.check_member("192.168.1.2").await;
-                println!("spawning");
-                clone.check_member("192.168.1.2").await;
-                //Check::check("192.168.1.2", &port).await;
-            });
-            //fut.await;
-            futures.push(fut);
-            //println!("{}",check.port);
-        }
-        for fut in futures {
-            //fut.await;
-            //fut.await;
-        }
-        
-    });
+    for check in &check_vec {
+        // Have to clone -> not possible to use sharing struct without Arc
+        let clone = check.clone();
+        rt.spawn(async move {
+            println!("spawning");
+            clone.check_member("192.168.1.2").await;
+        });
+    }
 
     rt.shutdown_on_idle();
     
@@ -166,7 +112,9 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     */
     
     for check in &check_vec {
-        //println!("Result: {}", check.lock().unwrap().text);
+        let clone = check.clone();
+        let lock = clone.text.lock().unwrap();
+        println!("Result: {}", &lock);
     }
 
 
