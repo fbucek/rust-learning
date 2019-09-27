@@ -1,9 +1,48 @@
 use std::io::prelude::*;
-use std::net::TcpStream;
+use tokio::net::TcpStream;
+use std::net::SocketAddr;
 
 // @see https://www.youtube.com/watch?v=9_3krAQtD2k&t=11625s
 
-fn main () {
+
+// @see https://rust-lang.github.io/async-book/print.html
+fn main () -> Result<(), Box<dyn std::error::Error>> {
+
+    // MacOS tcp timeout
+    // Default timeout value: 60s
+    //sysctl net.inet.tcp.keepinit: 75000
+    // sudo sysctl net.inet.tcp.keepinit=2000
+
+
+    let rt = tokio::runtime::Runtime::new().unwrap();
+
+    // 1min 15sec
+    // let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
+    // 
+    let ports = vec![ "22" ];
+
+    // Try to asynchonously check connected ports>
+    // @see 
+    for port in ports {
+        let addr = format!("192.168.1.2:{}", port).parse::<SocketAddr>()?;
+        println!("Will check url: {}", &addr);
+        rt.spawn(async move {
+            let res = tokio::net::TcpStream::connect(&addr).await;
+            println!("Checked port: {}", &addr);
+            if res.is_err() {
+                println!("Not possible to connect: {:?}", res.err());
+            }
+            //let stream = listener.accept().await;
+        });
+        // never gets here
+    }
+    
+    rt.shutdown_on_idle();
+    
+    Ok(())
+}
+
+
 
     // This code is not prepared for compilation
     // Jon writes mostly pseudo code which does not compile
@@ -31,4 +70,4 @@ fn main () {
     a.spawn(fut_y.and_then(|eq| assert!(eq)));
     a.block_on_all();
     */
-}
+//}

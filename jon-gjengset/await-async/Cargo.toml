@@ -7,7 +7,7 @@ workspace = "../.."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "await-async"
+name = "async-await"
 path = "src/main.rs"
 
 [[bin]]
@@ -15,3 +15,5 @@ name = "tcp"
 path = "src/tcp.rs"
 
 [dependencies]
+# async-await
+tokio = "0.2.0-alpha.1"
