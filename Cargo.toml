@@ -24,5 +24,4 @@ members = [
     "testing",
     "traits",
     "threads",
-    "jon-gjengset/await-async",
 ]
