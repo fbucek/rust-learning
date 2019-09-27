@@ -8,11 +8,18 @@ use std::net::SocketAddr;
 // @see https://rust-lang.github.io/async-book/print.html
 fn main () -> Result<(), Box<dyn std::error::Error>> {
 
+    //////////////////////////////
     // MacOS tcp timeout
     // Default timeout value: 60s
     //sysctl net.inet.tcp.keepinit: 75000
     // sudo sysctl net.inet.tcp.keepinit=2000
 
+    //////////////////////////////
+    // Linux
+    // @See https://stackoverflow.com/a/15485241/1917249
+    // @see http://willbryant.net/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout
+    // sysctl net.ipv4.tcp_syn_retries # default 6
+    // sudo sysctl net.ipv4.tcp_syn_retries=1
 
     let rt = tokio::runtime::Runtime::new().unwrap();
 
