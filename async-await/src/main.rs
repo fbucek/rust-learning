@@ -2,12 +2,18 @@ use std::io::prelude::*;
 use tokio::net::TcpStream;
 use std::net::SocketAddr;
 
+use std::sync::{Arc, Mutex};
+
 // @see https://www.youtube.com/watch?v=9_3krAQtD2k&t=11625s
+
+
+// IMLEMENT THIS EXAMPLE
+// @see https://docs.rs/crate/tokio/0.2.0-alpha.5/source/examples/tinydb.rs
 
 
 struct Check {
     port: String,
-    text: String,
+    text: Mutex<String>,
     
 }
 
@@ -16,8 +22,16 @@ impl Check {
     // pub fn new(port: str) -> Self {
         Check { 
             port: port.into(),
-            text: String::new(),
+            text: std::sync::Mutex::new(String::new()),
         }
+    }
+
+    pub fn arc_new<S>(port: S) -> Arc<Self> where S: Into<String> {
+    // pub fn new(port: str) -> Self {
+        Arc::new(Check { 
+            port: port.into(),
+            text: Mutex::new(String::new()),
+        })
     }
 
     pub async fn check(host: &str, port: &str) -> Result<(), String> {
@@ -37,21 +51,25 @@ impl Check {
         Ok(())
     } 
 
-    pub async fn check_member(self: &mut Self, host: &str) -> Result<(), String> {
-        println!("Will check {}{}", host, &self.port);
+    pub async fn check_member(self: &Self, host: &str) -> Result<(), String> {
+        //println!("Will check {}:{}", host, &self.port);
 
         let addr = match format!("{}:{}", host, &self.port).parse::<SocketAddr>() {
             Ok(address) => address,
-            Err(err) => { return Err("Not possible to parse address".to_string()) },
+            Err(_) => { return Err("Not possible to parse address".to_string()) },
         };
 
         println!("Will check url: {}", &addr);
         let res = tokio::net::TcpStream::connect(&addr).await;
         if res.is_err() {
             println!("Not possible to connect: {:?}", res.err());
-            self.text = "Not possible to connect".to_string();
-            println!("Text is: {}", &self.text);
-            return Err(format!("not possible to connect to: {}", &addr).to_string());
+            {
+                let mut text = self.text.lock().unwrap();
+                *text = String::from("Not possible to connect");
+                println!("Text is: {}", &text);
+            }
+            
+            //return Err(format!("not possible to connect to: {}", &addr).to_string());
         }
         Ok(())
     } 
@@ -63,12 +81,16 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
 
     
 
-    let mut check_vec = vec![ Check::new("23"), Check::new("4545") ];
+    let mut check_vec = vec![]; // Check::arc_new("23"), Check::arc_new("4545") ];
 
-    for n in 1..1000 {
-        check_vec.push(Check::new(n.to_string()));
+    for n in 1..80 {
+        check_vec.push(Check::arc_new(n.to_string()));
     }
+    println!("Array count: {}", check_vec.len());
 
+
+    
+    //let arc_vec = std::sync::Arc::new(check_vec);
 
     //////////////////////////////
     // MacOS tcp timeout
@@ -87,18 +109,41 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
 
     // 1min 15sec
     //let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
-    let ports = vec![ "22" ];
+    let mut ports = vec![ "22" ];
+    ports.remove(0);
 
-    for mut check in check_vec {
-        //let port = check.port.clone();
-        rt.spawn(async move {
-            check.check_member("192.168.1.2").await;
-            //Check::check("192.168.1.2", &port).await;
-        });
-        //println!("{}",check.port);
-    }
+    // let vec_cloned = arc_vec.clone();
+    // let vec_cloned_2 = arc_vec.clone();
+
+    let mut futures = Vec::new();
+
+    rt.block_on(async {
+        for check in &check_vec {
+            let clone = check.clone();
+            //let port = check.port.clone();
+            let fut = tokio::spawn(async move {
+                // let locked = clone.lock().unwrap();
+                // locked.check_member("192.168.1.2").await;
+                println!("spawning");
+                clone.check_member("192.168.1.2").await;
+                //Check::check("192.168.1.2", &port).await;
+            });
+            //fut.await;
+            futures.push(fut);
+            //println!("{}",check.port);
+        }
+        for fut in futures {
+            //fut.await;
+            //fut.await;
+        }
+        
+    });
+
+    rt.shutdown_on_idle();
+    
 
 
+    /*
     // Try to asynchonously check connected ports>
     // @see 
     for port in ports {
@@ -113,15 +158,16 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
             }
             //let stream = listener.accept().await;
         });
+
+        println!("Addr is: {}", addr);
         // never gets here
     }
     
-    rt.shutdown_on_idle();
+    */
     
-    
-    // for check in &check_vec {
-    //     println!("Result: {}", check.text);
-    // }
+    for check in &check_vec {
+        //println!("Result: {}", check.lock().unwrap().text);
+    }
 
 
     
