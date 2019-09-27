@@ -5,8 +5,35 @@ use std::net::SocketAddr;
 // @see https://www.youtube.com/watch?v=9_3krAQtD2k&t=11625s
 
 
+struct Check {
+    port: String
+}
+
+impl Check {
+    pub async fn check(host: &str, port: &str) -> Result<(), String> {
+        println!("Will check {}{}", host, port);
+
+        let addr = match format!("{}:{}", host, port).parse::<SocketAddr>() {
+            Ok(address) => address,
+            Err(err) => { return Err("Not possible to parse address".to_string()) },
+        };
+
+        println!("Will check url: {}", &addr);
+        let res = tokio::net::TcpStream::connect(&addr).await;
+        if res.is_err() {
+            println!("Not possible to connect: {:?}", res.err());
+            return Err(format!("not possible to connect to: {}", &addr).to_string());
+        }
+        Ok(())
+    } 
+}
+
+
 // @see https://rust-lang.github.io/async-book/print.html
 fn main () -> Result<(), Box<dyn std::error::Error>> {
+
+    let check_vec = vec![ Check { port: "23".to_string()}, Check { port: "45".to_string()},];
+
 
     //////////////////////////////
     // MacOS tcp timeout
@@ -24,14 +51,24 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     let rt = tokio::runtime::Runtime::new().unwrap();
 
     // 1min 15sec
-    let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
-    // let ports = vec![ "22" ];
+    //let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
+    let ports = vec![ "22" ];
+
+    for check in check_vec {
+        let port = check.port.clone();
+        rt.spawn(async move {
+            Check::check("192.168.1.2", &port).await;
+        });
+        //println!("{}",check.port);
+    }
+
 
     // Try to asynchonously check connected ports>
     // @see 
     for port in ports {
         let addr = format!("192.168.1.2:{}", port).parse::<SocketAddr>()?;
         println!("Will check url: {}", &addr);
+
         rt.spawn(async move {
             let res = tokio::net::TcpStream::connect(&addr).await;
             println!("Checked port: {}", &addr);
