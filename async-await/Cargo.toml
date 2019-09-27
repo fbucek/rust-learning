@@ -1,0 +1,14 @@
+[package]
+name = "async-await"
+version = "0.1.0"
+authors = ["Filip Bucek <fbucek@invloop.cz>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# The latest version of the "futures" library, which has lots of utilities
+# for writing async code. Enable the "compat" feature to include the
+# functions for using futures 0.3 and async/await with the Hyper library,
+# which use futures 0.1.
+futures-preview = "0.3.0-alpha.18"
