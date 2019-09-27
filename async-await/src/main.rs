@@ -6,10 +6,20 @@ use std::net::SocketAddr;
 
 
 struct Check {
-    port: String
+    port: String,
+    text: String,
+    
 }
 
 impl Check {
+    pub fn new<S>(port: S) -> Self where S: Into<String> {
+    // pub fn new(port: str) -> Self {
+        Check { 
+            port: port.into(),
+            text: String::new(),
+        }
+    }
+
     pub async fn check(host: &str, port: &str) -> Result<(), String> {
         println!("Will check {}{}", host, port);
 
@@ -26,13 +36,38 @@ impl Check {
         }
         Ok(())
     } 
+
+    pub async fn check_member(self: &mut Self, host: &str) -> Result<(), String> {
+        println!("Will check {}{}", host, &self.port);
+
+        let addr = match format!("{}:{}", host, &self.port).parse::<SocketAddr>() {
+            Ok(address) => address,
+            Err(err) => { return Err("Not possible to parse address".to_string()) },
+        };
+
+        println!("Will check url: {}", &addr);
+        let res = tokio::net::TcpStream::connect(&addr).await;
+        if res.is_err() {
+            println!("Not possible to connect: {:?}", res.err());
+            self.text = "Not possible to connect".to_string();
+            println!("Text is: {}", &self.text);
+            return Err(format!("not possible to connect to: {}", &addr).to_string());
+        }
+        Ok(())
+    } 
 }
 
 
 // @see https://rust-lang.github.io/async-book/print.html
 fn main () -> Result<(), Box<dyn std::error::Error>> {
 
-    let check_vec = vec![ Check { port: "23".to_string()}, Check { port: "45".to_string()},];
+    
+
+    let mut check_vec = vec![ Check::new("23"), Check::new("4545") ];
+
+    for n in 1..1000 {
+        check_vec.push(Check::new(n.to_string()));
+    }
 
 
     //////////////////////////////
@@ -54,10 +89,11 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     //let ports = vec![ "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "22", "22", "22", "22", "22", "22", "22", "22", "22", "32", "545", "332", "2323" ];
     let ports = vec![ "22" ];
 
-    for check in check_vec {
-        let port = check.port.clone();
+    for mut check in check_vec {
+        //let port = check.port.clone();
         rt.spawn(async move {
-            Check::check("192.168.1.2", &port).await;
+            check.check_member("192.168.1.2").await;
+            //Check::check("192.168.1.2", &port).await;
         });
         //println!("{}",check.port);
     }
@@ -81,6 +117,13 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     }
     
     rt.shutdown_on_idle();
+    
+    
+    // for check in &check_vec {
+    //     println!("Result: {}", check.text);
+    // }
+
+
     
     Ok(())
 }
