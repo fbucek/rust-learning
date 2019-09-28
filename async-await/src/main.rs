@@ -35,17 +35,18 @@ impl Check {
         };
 
         println!("Will check url: {}", &addr);
-        let res = tokio::net::TcpStream::connect(&addr).await;
-        if res.is_err() {
-            println!("Not possible to connect: {:?}", res.err());
+        tokio::net::TcpStream::connect(&addr).await.map_err(|err| {
+            println!("Not possible to connect: {:?}", err);
             {
                 let mut text = self.text.lock().unwrap();
-                *text = String::from("Not possible to connect");
-                println!("Text is: {}", &text);
+                *text = format!("Not possible to connect to: {} - error: {:?}", &addr, err);
+               // println!("Text is: {}", &text);
             }
+        });
+        // if res.is_err() {
             
-            //return Err(format!("not possible to connect to: {}", &addr).to_string());
-        }
+        //     //return Err(format!("not possible to connect to: {}", &addr).to_string());
+        // }
         Ok(())
     } 
 }
@@ -66,9 +67,12 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     // sysctl net.ipv4.tcp_syn_retries # default 6
     // sudo sysctl net.ipv4.tcp_syn_retries=1
 
+    // Measure time
+    let now = std::time::SystemTime::now();
+
     // Prepare port check    
     let mut check_vec = vec![]; // Check::arc_new("23"), Check::arc_new("4545") ];
-    for n in 1..8000 {
+    for n in 1..800 {
         check_vec.push(Check::arc_new(n.to_string()));
     }
     println!("Array count: {}", check_vec.len());
@@ -117,7 +121,8 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
         println!("Result: {}", &lock);
     }
 
-
+    let elapsed = now.elapsed()?;
+    println!("Elapsed time: {}", elapsed.as_millis());
     
     Ok(())
 }
