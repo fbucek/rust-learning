@@ -78,7 +78,8 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
     println!("Array count: {}", check_vec.len());
 
 
-    let rt = tokio::runtime::Runtime::new().unwrap();
+    // let rt = tokio::runtime::Runtime::new().unwrap();
+    let rt = tokio::runtime::Builder::new().core_threads(1).build().unwrap();
 
     for check in &check_vec {
         // Have to clone -> not possible to use sharing struct without Arc
