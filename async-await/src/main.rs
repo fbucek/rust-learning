@@ -18,6 +18,7 @@ struct Check {
 }
 
 impl Check {
+    /// Creates new atomic reference counter 
     pub fn arc_new<S>(port: S) -> Arc<Self> where S: Into<String> {
     // pub fn new(port: str) -> Self {
         Arc::new(Check { 
@@ -34,20 +35,17 @@ impl Check {
             Err(_) => { return Err("Not possible to parse address".to_string()) },
         };
 
-        println!("Will check url: {}", &addr);
-        tokio::net::TcpStream::connect(&addr).await.map_err(|err| {
-            println!("Not possible to connect: {:?}", err);
-            {
+        match tokio::net::TcpStream::connect(&addr).await {
+            Ok(_) => Ok(()),
+            Err(err) => {
+                println!("Not possible to connect: {:?}", err);
                 let mut text = self.text.lock().unwrap();
-                *text = format!("Not possible to connect to: {} - error: {:?}", &addr, err);
-               // println!("Text is: {}", &text);
-            }
-        });
-        // if res.is_err() {
-            
-        //     //return Err(format!("not possible to connect to: {}", &addr).to_string());
-        // }
-        Ok(())
+                let msg = format!("Not possible to connect to: {} - error: {:?}", &addr, err);
+                *text = msg.clone();
+                Err(msg)
+            },
+        }
+        //Ok(())
     } 
 }
 
@@ -85,7 +83,6 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
         // Have to clone -> not possible to use sharing struct without Arc
         let clone = check.clone();
         rt.spawn(async move {
-            println!("spawning");
             clone.check_member("192.168.1.2").await;
         });
     }
