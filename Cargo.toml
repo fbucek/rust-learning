@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    "actix-vue-websocket",
     "async-await",
     "autotests",
     "closures",
