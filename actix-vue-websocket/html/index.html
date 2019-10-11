@@ -17,6 +17,9 @@
             <form @submit.prevent="sendMessage" action="#">
                 <input v-model="message"><button type="submit">Send Message</button>
             </form>
+            <form @submit.prevent="sendBinary" action="#">
+                <input v-model="message"><button type="submit">Send Message</button>
+            </form>
             <ul id="logs">
                 <li v-for="log in logs" class="log">
                     {{ log.event }}: {{ log.data }}
@@ -25,7 +28,8 @@
         </div>
     </div>
     <!-- partial -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js'></script>
+    <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js'></script> -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js'></script>
     <script src="./script.js"></script>
 
 </body>

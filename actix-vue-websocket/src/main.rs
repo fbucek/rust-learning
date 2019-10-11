@@ -113,20 +113,18 @@ fn main() -> std::io::Result<()> {
     let res = HttpServer::new( 
         move || App::new()
             .wrap(middleware::Logger::default())
-            .service(web::resource("/{id}/{name}/index.html").to(index))
             // Websocket service
-            // .service(web::resource("/ws/").route(web::get().to(websocket::ws_index)))
-            // /.service(actix_files::Files::new("/", "./html/").index_file("index.html"))
+            .service(web::resource("/ws/").route(web::get().to(websocket::ws_index)))
+            .service(web::resource("/{id}/{name}/index.html").to(index))
             .service(web::resource("/stop").to(stop))
             .service(web::resource("/start").to(start))
-            //.service(actix_files::Files::new("/html", "html/"))
 
             // redirect to websocket.html
-            // .service(web::resource("/").route(web::get().to(|| {
-            //     HttpResponse::Found()
-            //         .header("LOCATION", "/html/index.html")
-            //         .finish()
-            // })))
+            .service(web::resource("/").route(web::get().to(|| {
+                HttpResponse::Found()
+                    .header("LOCATION", "/index.html")
+                    .finish()
+            })))
             
             // static files
             .service(actix_files::Files::new("/", "html/"))

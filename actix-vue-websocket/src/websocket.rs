@@ -13,7 +13,9 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 /// do websocket handshake and start `MyWebSocket` actor
 pub fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
     println!("{:?}", r);
-    let res = ws::start(MyWebSocket::new(), &r, stream);
+    //let res = ws::start(MyWebSocket::new(), &r, stream);
+    let protocols = vec!["http", "ws"];
+    let res = ws::start_with_protocols(MyWebSocket::new(), &protocols, &r, stream);
     println!("{:?}", res.as_ref().unwrap());
     res
 }
@@ -49,7 +51,10 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
                 self.hb = Instant::now();
             }
             ws::Message::Text(text) => ctx.text(text),
-            ws::Message::Binary(bin) => ctx.binary(bin),
+            ws::Message::Binary(bin) => {
+                println!("sending binary data");
+                ctx.binary(bin);
+            },
             ws::Message::Close(_) => {
                 ctx.stop();
             }
