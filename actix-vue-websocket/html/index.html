@@ -18,7 +18,10 @@
                 <input v-model="message"><button type="submit">Send Message</button>
             </form>
             <form @submit.prevent="sendBinary" action="#">
-                <input v-model="message"><button type="submit">Send Message</button>
+                <button type="submit">Send Binary message</button>
+            </form>
+            <form @submit.prevent="sendBinary" action="#">
+            <input v-model="message"><button type="submit">Send Message</button>
             </form>
             <ul id="logs">
                 <li v-for="log in logs" class="log">

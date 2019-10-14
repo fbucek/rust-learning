@@ -25,7 +25,9 @@ const app = new Vue({
             };
         },
         disconnect() {
-            this.socket.close();
+            let code = 1000;
+            let reason = "User clicked on disconnect"
+            this.socket.close(code, reason);
             this.status = "disconnected";
             this.logs = [];
         },

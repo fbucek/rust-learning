@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 
 use actix::prelude::*;
 use actix_web_actors::ws;
+use actix_web_actors::ws::CloseReason;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 
 /// How often heartbeat pings are sent
@@ -55,7 +56,9 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
                 println!("sending binary data");
                 ctx.binary(bin);
             },
-            ws::Message::Close(_) => {
+            // @see https://docs.rs/actix-web-actors/1.0.2/actix_web_actors/ws/struct.CloseReason.html
+            ws::Message::Close(reason) => { 
+                println!("reason: {:?}", reason);
                 ctx.stop();
             }
             ws::Message::Nop => (),
