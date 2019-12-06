@@ -8,5 +8,5 @@ edition = "2018"
 
 [dependencies]
 # async-await
-tokio = "0.2.0-alpha.1"
+tokio = "0.2.2"
 
