@@ -1,4 +1,3 @@
-use std::io::prelude::*;
 use tokio::net::TcpStream;
 use std::net::SocketAddr;
 
@@ -35,7 +34,7 @@ impl Check {
             Err(_) => { return Err("Not possible to parse address".to_string()) },
         };
 
-        match tokio::net::TcpStream::connect(&addr).await {
+        match TcpStream::connect(&addr).await {
             Ok(_) => Ok(()),
             Err(err) => {
                 println!("Not possible to connect: {:?}", err);
@@ -51,7 +50,8 @@ impl Check {
 
 
 // @see https://rust-lang.github.io/async-book/print.html
-fn main () -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main () -> Result<(), Box<dyn std::error::Error>> {
     //////////////////////////////
     // MacOS tcp timeout
     // Default timeout value: 60s
@@ -77,18 +77,17 @@ fn main () -> Result<(), Box<dyn std::error::Error>> {
 
 
     // let rt = tokio::runtime::Runtime::new().unwrap();
-    let rt = tokio::runtime::Builder::new().core_threads(1).build().unwrap();
+    // let rt = tokio::runtime::Builder::new().num_threads(1).build().unwrap();
 
     for check in &check_vec {
-        // Have to clone -> not possible to use sharing struct without Arc
-        let clone = check.clone();
-        rt.spawn(async move {
-            clone.check_member("192.168.1.2").await;
-        });
+        check.check_member("192.168.1.2").await?;
+        // // Have to clone -> not possible to use sharing struct without Arc
+        // let clone = check.clone();
+        // rt.spawn(async move {
+        //     clone.check_member("192.168.1.2").await;
+        // });
     }
 
-    rt.shutdown_on_idle();
-    
 
 
     /*
