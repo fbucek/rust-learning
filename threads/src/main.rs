@@ -20,5 +20,5 @@ fn main() {
     for i in 1..5 {
         println!("Nubmer {}, from main thread", i);
         thread::sleep(Duration::from_millis(1));
-    }
+    }   
 }

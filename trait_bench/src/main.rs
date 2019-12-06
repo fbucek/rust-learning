@@ -1,6 +1,3 @@
-#![feature(test)]
-
-
 /// @see https://www.reddit.com/r/rust/comments/74llky/trait_objects_22x_slower_than_static_dispatch/
 
 
@@ -72,7 +69,7 @@ fn method_1(e: &E) -> usize {
 }
 
 fn method_2(e: &E) -> usize {
-    return 2
+    return 2;
 }
 
 static E_METHODS: &[fn(e: &E) -> usize] = &[

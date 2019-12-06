@@ -1,0 +1,22 @@
+[package]
+name = "actix-vue-websocket"
+version = "0.1.0"
+authors = ["Filip Bucek <fbucek@invloop.cz>"]
+edition = "2018"
+workspace = ".."
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "websocketlib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "actixvue"
+path = "src/main.rs"
+
+[dependencies]
+actix = "0.8.3"
+actix-web = "1.0.8"
+actix-web-actors = "1.0.2" # needed by websockets
+actix-files = "0.1.5" # fs::Files
+env_logger = "0.7.0"

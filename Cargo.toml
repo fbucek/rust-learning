@@ -1,6 +1,8 @@
 [workspace]
 
 members = [
+    "actix-vue-websocket",
+    "async-await",
     "autotests",
     "closures",
     "coins",
@@ -18,8 +20,8 @@ members = [
     "reference-cycle",
     "smart-pointers",
     "strings",
-    #"trait_bench", # nightly only
-    #"trait_bench_orig", # nightly only
+    "trait_bench", # nightly only
+    "trait_bench_orig", # nightly only
     "testing",
     "traits",
     "threads",

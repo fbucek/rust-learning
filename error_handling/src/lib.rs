@@ -30,7 +30,7 @@ pub fn result_function(filename: &str) -> bool {
     if f.is_err() {
         return false;
     }
-    return true;
+    true
 }
 
 pub fn option_function(filename: &str) -> bool {
@@ -68,17 +68,17 @@ pub fn option_function(filename: &str) -> bool {
     }
 
     // Now for sure f is std::fs::File
-    return true;
+    true
 }
 
 pub fn panic_unwrap(filename: &str) -> bool {
     fs::File::open(&filename).unwrap();
-    return true;
+    true
 }
 
 pub fn panic_expect(filename: &str) -> bool {
     fs::File::open(&filename).expect("Not possible to open file");
-    return true;
+    true
 }
 
 #[cfg(test)]
@@ -88,17 +88,17 @@ mod tests {
     #[test]
     fn read_from_file_test() {
         // Must not panic and must read some bytes
-        assert!(read_from_file(&"Cargo.toml").unwrap().len() > 0);
+        assert!(!read_from_file(&"Cargo.toml").unwrap().is_empty());
         // Must panic when unwrap
         let res = std::panic::catch_unwind(|| panic_expect(&"nonexisting"));
         assert!(res.is_err());
 
-        let text = read_from_file(&"nonexisting").unwrap_or(String::new());
+        let text = read_from_file(&"nonexisting").unwrap_or_default();
         assert_eq!(text.len(), 0);
 
         let text = read_from_file(&"nonexisting").unwrap_or_else(|err| {
             println!("printing unwrap or else parameter:{:?}", err);
-            return String::new();
+            String::new()
         });
         assert_eq!(text.len(), 0);
 
