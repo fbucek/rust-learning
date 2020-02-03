@@ -1,14 +1,13 @@
 use std::time::{Duration, Instant};
 
 use actix::prelude::*;
-use actix_web_actors::ws;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
+use actix_web_actors::ws;
 
 /// How often heartbeat pings are sent
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
 /// How long before lack of client response causes a timeout
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
-
 
 /// do websocket handshake and start `MyWebSocket` actor
 pub async fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
@@ -61,9 +60,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWebSocket {
             ws::Message::Binary(bin) => {
                 println!("sending binary data");
                 ctx.binary(bin);
-            },
+            }
             // @see https://docs.rs/actix-web-actors/1.0.2/actix_web_actors/ws/struct.CloseReason.html
-            ws::Message::Close(reason) => { 
+            ws::Message::Close(reason) => {
                 println!("reason: {:?}", reason);
                 ctx.stop();
             }

@@ -1,20 +1,18 @@
 //! Example how to guard variable
 //! @see https://users.rust-lang.org/t/solved-help-with-shared-data-and-mutexes/5323
 
-
-use std::thread;
+use actix_web::{web, App, HttpServer, Responder};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread;
 use std::time::Duration;
-use actix_web::{web, App, HttpServer, Responder};
 
 pub enum RunnerEvent {
     Run(String),
     Message(String),
 }
-
 
 pub struct Control {
     pub runner: Arc<Runner>,
@@ -34,16 +32,14 @@ impl Control {
             self.runner.stop.swap(false, Ordering::Relaxed);
             self.runner.running.swap(true, Ordering::Relaxed);
             let runner = self.runner.clone();
-            thread::spawn(move || {
-                loop {
-                    if runner.stop.load(Ordering::Relaxed) {
-                        println!("Control: Runner stop");
-                        runner.running.swap(false, Ordering::Relaxed);
-                        break;
-                    }
-                    thread::sleep(Duration::from_millis(1000));
-                    println!("Runner: ping");
+            thread::spawn(move || loop {
+                if runner.stop.load(Ordering::Relaxed) {
+                    println!("Control: Runner stop");
+                    runner.running.swap(false, Ordering::Relaxed);
+                    break;
                 }
+                thread::sleep(Duration::from_millis(1000));
+                println!("Runner: ping");
             });
             Ok(String::from("Control: Runner started"))
         }
@@ -65,7 +61,6 @@ impl Runner {
                     if runner.stop.load(Ordering::Relaxed) {
                         println!("Runner: stop");
                         break; // ends the loop
-
                     }
                     thread::sleep(Duration::from_millis(1000));
                     println!("Runner: ping");
@@ -76,17 +71,12 @@ impl Runner {
     }
 }
 
-
-async fn index(
-    info: web::Path<(u32, String)>
-) -> impl Responder {
+async fn index(info: web::Path<(u32, String)>) -> impl Responder {
     println!("OK");
     format!("Hello {}! id:{}", info.1, info.0)
 }
 
-async fn stop(
-    data: web::Data<Arc<Control>>,
-) -> impl Responder {
+async fn stop(data: web::Data<Arc<Control>>) -> impl Responder {
     match data.stop() {
         Ok(_) => println!("Data succesfully stopped"),
         Err(err) => println!("Problemt stopping thread {:?}", err),
@@ -99,13 +89,10 @@ async fn stop(
     "Sending 'end' to stop thread".to_string()
 }
 
-async fn start(
-    data: web::Data<Arc<Runner>>,
-    control: web::Data<Arc<Control>>,
-) -> impl Responder {
+async fn start(data: web::Data<Arc<Runner>>, control: web::Data<Arc<Control>>) -> impl Responder {
     println!("try to start runner");
     if let Err(err) = control.run() {
-        println!("Control: Not possible to start runner");
+        println!("Control: Not possible to start runner - error: {:?}", err);
     }
     //let runner: Arc<Runner> = &data.clone();
     if let Err(err) = Runner::run(data.get_ref().clone(), String::from("echo Fine")) {
@@ -118,18 +105,17 @@ async fn start(
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Chanel to communicate between threads
-    let (sender, receiver) = mpsc::channel();
+    let (sender, _receiver) = mpsc::channel();
 
-    let data = Arc::new(Runner{
+    let data = Arc::new(Runner {
         stop: AtomicBool::new(false),
         running: AtomicBool::new(false),
         sender: Mutex::new(sender.clone()),
     });
 
-    let control = Arc::new(Control{
+    let control = Arc::new(Control {
         runner: data.clone(),
     });
-
 
     let data1 = data.clone();
     let data2 = data.clone();
@@ -139,7 +125,6 @@ async fn main() -> std::io::Result<()> {
             if data1.stop.load(Ordering::Relaxed) {
                 println!("Stopper endding thread");
                 break; // ends the loop
-
             }
             thread::sleep(Duration::from_millis(1000));
             println!("Every seconds print");
@@ -148,23 +133,25 @@ async fn main() -> std::io::Result<()> {
 
     println!("http://localhost:8091/32/filip/index.html");
 
-    let server_future = HttpServer::new( 
-        move || App::new().service(
-            web::resource("/{id}/{name}/index.html").to(index))
+    let server_future = HttpServer::new(move || {
+        App::new()
+            .service(web::resource("/{id}/{name}/index.html").to(index))
             .service(web::resource("/stop").to(stop))
             .service(web::resource("/start").to(start))
             .data(data2.clone())
             .data(control.clone())
-            )
-        .bind("127.0.0.1:8091")
-        .expect("Not possible to bind to address")
-        .run();
+    })
+    .bind("127.0.0.1:8091")
+    .expect("Not possible to bind to address")
+    .run();
 
     // Have to send end to application
     //if let Err(err) = sender.send(&"end") { println!("Not possible to stop thread ( probably not running ) {:?}", err ) }
     //if let
     data.stop.swap(true, Ordering::Relaxed);
-    if let Err(err) = handler.join() { println!("Not possible to join thread: {:?}", err) }
+    if let Err(err) = handler.join() {
+        println!("Not possible to join thread: {:?}", err)
+    }
 
     server_future.await
 }

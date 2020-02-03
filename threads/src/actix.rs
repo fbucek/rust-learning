@@ -1,12 +1,11 @@
 //! Example how to guard variable
 //! @see https://users.rust-lang.org/t/solved-help-with-shared-data-and-mutexes/5323
 
-
-use std::thread;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::Duration;
 use actix_web::{web, App, HttpServer, Responder};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
 
 use std::process::Command;
 
@@ -39,7 +38,7 @@ impl Runner {
                 .arg("--version")
                 .output()
                 .expect("Not possible to run comnad");
-            
+
             println!("Process status: {}", cmd.status);
             let out = String::from_utf8_lossy(&cmd.stdout);
 
@@ -68,52 +67,49 @@ impl Control {
     }
 }
 
-async fn index(
-    info: web::Path<(u32, String)>
-) -> impl Responder {
+async fn index(info: web::Path<(u32, String)>) -> impl Responder {
     println!("OK");
     format!("Hello {}! id:{}", info.1, info.0)
 }
 
-async fn stop(
-    data: web::Data<Arc<Control>>,
-) -> impl Responder {
-    if let Err(err) = data.stop() { println!("Control: Not possible to stop runner: {:?}", err)}
+async fn stop(data: web::Data<Arc<Control>>) -> impl Responder {
+    if let Err(err) = data.stop() {
+        println!("Control: Not possible to stop runner: {:?}", err)
+    }
     "Sending 'end' to stop thread".to_string()
 }
 
-async fn start(
-    control: web::Data<Arc<Control>>,
-) -> impl Responder {
-    
-    if let Err(err) = control.run() { println!("Control: Not possible to start runner: {:?}", err)}
+async fn start(control: web::Data<Arc<Control>>) -> impl Responder {
+    if let Err(err) = control.run() {
+        println!("Control: Not possible to start runner: {:?}", err)
+    }
     "Control: trying to start runner".to_string()
 }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    let runner = Arc::new(Runner{
+    let runner = Arc::new(Runner {
         stop: AtomicBool::new(false),
         running: AtomicBool::new(false),
     });
 
-    let control = Arc::new(Control{
+    let control = Arc::new(Control {
         runner: runner.clone(),
     });
 
     let control1 = control.clone();
     println!("http://localhost:8091/32/filip/index.html");
 
-    let server_future = HttpServer::new( 
-        move || App::new().service(
-            web::resource("/{id}/{name}/index.html").to(index))
+    let server_future = HttpServer::new(move || {
+        App::new()
+            .service(web::resource("/{id}/{name}/index.html").to(index))
             .service(web::resource("/stop").to(stop))
             .service(web::resource("/start").to(start))
             .data(control1.clone())
-            )
-        .bind("127.0.0.1:8091")
-        .expect("Not possible to bind to address")
-        .run();
+    })
+    .bind("127.0.0.1:8091")
+    .expect("Not possible to bind to address")
+    .run();
 
     // Have to stop runners
     control.stop().unwrap();

@@ -10,6 +10,7 @@ fn panic_rust() {
     println!("{:?}", v[40]); // <-- only 2 elements
 }
 
+#[allow(dead_code)]
 fn better_open() {
     let filename = "hello_better.txt";
 
