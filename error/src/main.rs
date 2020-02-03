@@ -10,6 +10,7 @@ fn panic_rust() {
     println!("{:?}", v[40]); // <-- only 2 elements
 }
 
+#[allow(dead_code)]
 fn better_open() {
     let filename = "hello_better.txt";
 
@@ -103,15 +104,15 @@ fn main() {
     }
 
     let s = read_username_short();
-    if s.is_ok() {
-        println!("Unwrapped s: {}", s.unwrap().trim());
+    if let Ok(s) = s {
+        println!("Unwrapped s: {}", s.trim());
     }
     //println!("File content is: {}", &s);
     read_even_shorter().unwrap();
 
     // shortest method is
     let s = fs::read_to_string("hello.txt");
-    if s.is_ok() {
-        println!("Shortes method: {}", s.unwrap().trim());
+    if let Ok(s) = s {
+        println!("Shortes method: {}", s.trim());
     }
 }

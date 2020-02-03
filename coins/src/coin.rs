@@ -29,7 +29,6 @@ pub fn value_in_cents(coin: Coin) -> u8 {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

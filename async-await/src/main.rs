@@ -1,26 +1,26 @@
-use tokio::net::TcpStream;
 use std::net::SocketAddr;
+use tokio::net::TcpStream;
 
 use std::sync::{Arc, Mutex};
 
 // @see https://www.youtube.com/watch?v=9_3krAQtD2k&t=11625s
 
-
 // IMLEMENT THIS EXAMPLE
 // @see https://docs.rs/crate/tokio/0.2.0-alpha.5/source/examples/tinydb.rs
-
 
 struct Check {
     port: String,
     text: Mutex<String>,
-    
 }
 
 impl Check {
-    /// Creates new atomic reference counter 
-    pub fn arc_new<S>(port: S) -> Arc<Self> where S: Into<String> {
-    // pub fn new(port: str) -> Self {
-        Arc::new(Check { 
+    /// Creates new atomic reference counter
+    pub fn arc_new<S>(port: S) -> Arc<Self>
+    where
+        S: Into<String>,
+    {
+        // pub fn new(port: str) -> Self {
+        Arc::new(Check {
             port: port.into(),
             text: Mutex::new(String::new()),
         })
@@ -31,7 +31,7 @@ impl Check {
 
         let addr = match format!("{}:{}", host, &self.port).parse::<SocketAddr>() {
             Ok(address) => address,
-            Err(_) => { return Err("Not possible to parse address".to_string()) },
+            Err(_) => return Err("Not possible to parse address".to_string()),
         };
 
         match TcpStream::connect(&addr).await {
@@ -42,16 +42,15 @@ impl Check {
                 let msg = format!("Not possible to connect to: {} - error: {:?}", &addr, err);
                 *text = msg.clone();
                 Err(msg)
-            },
+            }
         }
         //Ok(())
-    } 
+    }
 }
-
 
 // @see https://rust-lang.github.io/async-book/print.html
 #[tokio::main]
-async fn main () -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //////////////////////////////
     // MacOS tcp timeout
     // Default timeout value: 60s
@@ -68,13 +67,12 @@ async fn main () -> Result<(), Box<dyn std::error::Error>> {
     // Measure time
     let now = std::time::SystemTime::now();
 
-    // Prepare port check    
+    // Prepare port check
     let mut check_vec = vec![]; // Check::arc_new("23"), Check::arc_new("4545") ];
     for n in 1..800 {
         check_vec.push(Check::arc_new(n.to_string()));
     }
     println!("Array count: {}", check_vec.len());
-
 
     // let rt = tokio::runtime::Runtime::new().unwrap();
     // let rt = tokio::runtime::Builder::new().num_threads(1).build().unwrap();
@@ -88,11 +86,9 @@ async fn main () -> Result<(), Box<dyn std::error::Error>> {
         // });
     }
 
-
-
     /*
     // Try to asynchonously check connected ports>
-    // @see 
+    // @see
     for port in ports {
         let addr = format!("192.168.1.2:{}", port).parse::<SocketAddr>()?;
         println!("Will check url: {}", &addr);
@@ -109,9 +105,9 @@ async fn main () -> Result<(), Box<dyn std::error::Error>> {
         println!("Addr is: {}", addr);
         // never gets here
     }
-    
+
     */
-    
+
     for check in &check_vec {
         let clone = check.clone();
         let lock = clone.text.lock().unwrap();
@@ -120,36 +116,34 @@ async fn main () -> Result<(), Box<dyn std::error::Error>> {
 
     let elapsed = now.elapsed()?;
     println!("Elapsed time: {}", elapsed.as_millis());
-    
+
     Ok(())
 }
 
+// This code is not prepared for compilation
+// Jon writes mostly pseudo code which does not compile
 
+/*
+let x = TcpStream::connect("127.0.0.1").unwrap();
+let y = TcpStream::connect("127.0.0.1").unwrap();
+x.write("info");
+y.write("info");
 
-    // This code is not prepared for compilation
-    // Jon writes mostly pseudo code which does not compile
+assert_eq!(x.read().unwrap(), "response");
+assert_eq!(y.read().unwrap(), "repsonse");
 
-    /*
-    let x = TcpStream::connect("127.0.0.1").unwrap();
-    let y = TcpStream::connect("127.0.0.1").unwrap();
-    x.write("info");
-    y.write("info");
+let fut_x = TcpStream::connect("127.0.0.1")
+    .and_then(|c| c.write("info"))
+    .and_then(|c| c.read())
+    .and_then(|(c, b)|  b == "response");
+println!("{:?}", fut_x);
 
-    assert_eq!(x.read().unwrap(), "response");
-    assert_eq!(y.read().unwrap(), "repsonse");
+let a: Executor;
+let x = a.run(fut_x);
+let y = a.run(fut_y);
 
-    let fut_x = TcpStream::connect("127.0.0.1")
-        .and_then(|c| c.write("info"))
-        .and_then(|c| c.read())
-        .and_then(|(c, b)|  b == "response");
-    println!("{:?}", fut_x);
-
-    let a: Executor;
-    let x = a.run(fut_x);
-    let y = a.run(fut_y);
-
-    a.spawn(fut_x.and_then(|eq| assert!(eq)));
-    a.spawn(fut_y.and_then(|eq| assert!(eq)));
-    a.block_on_all();
-    */
+a.spawn(fut_x.and_then(|eq| assert!(eq)));
+a.spawn(fut_y.and_then(|eq| assert!(eq)));
+a.block_on_all();
+*/
 //}

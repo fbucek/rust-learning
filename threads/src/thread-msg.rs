@@ -25,18 +25,18 @@ fn main() {
     });
 
     thread::spawn(move || {
-    let vals = vec![
-        String::from("more"),
-        String::from("messages"),
-        String::from("for"),
-        String::from("you"),
-    ];
+        let vals = vec![
+            String::from("more"),
+            String::from("messages"),
+            String::from("for"),
+            String::from("you"),
+        ];
 
-    for val in vals {
-        sender.send(val).unwrap();
-        thread::sleep(Duration::from_secs(1));
-    }
-});
+        for val in vals {
+            sender.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
 
     for received in receiver {
         println!("Got: {}", received);
