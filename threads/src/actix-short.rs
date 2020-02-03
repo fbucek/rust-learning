@@ -51,7 +51,7 @@ impl Control {
 }
 
 impl Runner {
-    fn run(runner: Arc<Runner>, code: String) -> Result<String, &'static str> {
+    fn run(runner: Arc<Runner>, _code: String) -> Result<String, &'static str> {
         if runner.running.load(Ordering::Relaxed) {
             Err("Already running")
         } else {
