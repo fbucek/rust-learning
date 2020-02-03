@@ -8,5 +8,5 @@ edition = "2018"
 
 [dependencies]
 # async-await
-tokio = { version = "0.2.2", features = ["full"] }
+tokio = { version = "0.2.11", features = ["full"] }
 
