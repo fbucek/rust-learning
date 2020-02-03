@@ -77,14 +77,14 @@ impl Runner {
 }
 
 
-fn index(
+async fn index(
     info: web::Path<(u32, String)>
 ) -> impl Responder {
     println!("OK");
     format!("Hello {}! id:{}", info.1, info.0)
 }
 
-fn stop(
+async fn stop(
     data: web::Data<Arc<Control>>,
 ) -> impl Responder {
     match data.stop() {
@@ -99,7 +99,7 @@ fn stop(
     "Sending 'end' to stop thread".to_string()
 }
 
-fn start(
+async fn start(
     data: web::Data<Arc<Runner>>,
     control: web::Data<Arc<Control>>,
 ) -> impl Responder {
@@ -115,8 +115,8 @@ fn start(
     "sending start to runner".to_string()
 }
 
-
-fn main() -> std::io::Result<()> {
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
     // Chanel to communicate between threads
     let (sender, receiver) = mpsc::channel();
 
@@ -148,7 +148,7 @@ fn main() -> std::io::Result<()> {
 
     println!("http://localhost:8091/32/filip/index.html");
 
-    let res = HttpServer::new( 
+    let server_future = HttpServer::new( 
         move || App::new().service(
             web::resource("/{id}/{name}/index.html").to(index))
             .service(web::resource("/stop").to(stop))
@@ -156,7 +156,8 @@ fn main() -> std::io::Result<()> {
             .data(data2.clone())
             .data(control.clone())
             )
-        .bind("127.0.0.1:8091")?
+        .bind("127.0.0.1:8091")
+        .expect("Not possible to bind to address")
         .run();
 
     // Have to send end to application
@@ -165,5 +166,5 @@ fn main() -> std::io::Result<()> {
     data.stop.swap(true, Ordering::Relaxed);
     if let Err(err) = handler.join() { println!("Not possible to join thread: {:?}", err) }
 
-    res
+    server_future.await
 }

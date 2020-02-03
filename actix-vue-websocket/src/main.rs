@@ -70,21 +70,21 @@ impl Control {
     }
 }
 
-fn index(
+async fn index(
     info: web::Path<(u32, String)>
 ) -> impl Responder {
     println!("OK");
     format!("Hello {}! id:{}", info.1, info.0)
 }
 
-fn stop(
+async fn stop(
     data: web::Data<Arc<Control>>,
 ) -> impl Responder {
     if let Err(err) = data.stop() { println!("Control: Not possible to stop runner: {:?}", err)}
     "Sending 'end' to stop thread".to_string()
 }
 
-fn start(
+async fn start(
     control: web::Data<Arc<Control>>,
 ) -> impl Responder {
     
@@ -92,8 +92,8 @@ fn start(
     "Control: trying to start runner".to_string()
 }
 
-
-fn main() -> std::io::Result<()> {
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info,debug");
     env_logger::init();
 
@@ -135,11 +135,12 @@ fn main() -> std::io::Result<()> {
 
             .data(control1.clone())
             )
-        .bind(&url)?
+        .bind(&url)
+        .expect("Not possible to bind to port")
         .run();
 
     // Have to stop runners
     control.stop().unwrap();
 
-    res
+    res.await
 }

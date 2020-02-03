@@ -68,21 +68,21 @@ impl Control {
     }
 }
 
-fn index(
+async fn index(
     info: web::Path<(u32, String)>
 ) -> impl Responder {
     println!("OK");
     format!("Hello {}! id:{}", info.1, info.0)
 }
 
-fn stop(
+async fn stop(
     data: web::Data<Arc<Control>>,
 ) -> impl Responder {
     if let Err(err) = data.stop() { println!("Control: Not possible to stop runner: {:?}", err)}
     "Sending 'end' to stop thread".to_string()
 }
 
-fn start(
+async fn start(
     control: web::Data<Arc<Control>>,
 ) -> impl Responder {
     
@@ -90,8 +90,8 @@ fn start(
     "Control: trying to start runner".to_string()
 }
 
-
-fn main() -> std::io::Result<()> {
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
     let runner = Arc::new(Runner{
         stop: AtomicBool::new(false),
         running: AtomicBool::new(false),
@@ -104,18 +104,18 @@ fn main() -> std::io::Result<()> {
     let control1 = control.clone();
     println!("http://localhost:8091/32/filip/index.html");
 
-    let res = HttpServer::new( 
+    let server_future = HttpServer::new( 
         move || App::new().service(
             web::resource("/{id}/{name}/index.html").to(index))
             .service(web::resource("/stop").to(stop))
             .service(web::resource("/start").to(start))
             .data(control1.clone())
             )
-        .bind("127.0.0.1:8091")?
+        .bind("127.0.0.1:8091")
+        .expect("Not possible to bind to address")
         .run();
 
     // Have to stop runners
     control.stop().unwrap();
-
-    res
+    server_future.await
 }

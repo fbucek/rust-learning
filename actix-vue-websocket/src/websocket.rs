@@ -2,7 +2,6 @@ use std::time::{Duration, Instant};
 
 use actix::prelude::*;
 use actix_web_actors::ws;
-use actix_web_actors::ws::CloseReason;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 
 /// How often heartbeat pings are sent
@@ -12,7 +11,7 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
 
 /// do websocket handshake and start `MyWebSocket` actor
-pub fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
+pub async fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
     println!("{:?}", r);
     //let res = ws::start(MyWebSocket::new(), &r, stream);
     let protocols = vec!["http", "ws"];
@@ -39,9 +38,16 @@ impl Actor for MyWebSocket {
 }
 
 /// Handler for `ws::Message`
-impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
-    fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MyWebSocket {
+    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         // process websocket messages
+        let msg = match msg {
+            Err(_) => {
+                ctx.stop();
+                return;
+            }
+            Ok(msg) => msg,
+        };
         println!("WS: {:?}", msg);
         match msg {
             ws::Message::Ping(msg) => {
@@ -59,6 +65,9 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
             // @see https://docs.rs/actix-web-actors/1.0.2/actix_web_actors/ws/struct.CloseReason.html
             ws::Message::Close(reason) => { 
                 println!("reason: {:?}", reason);
+                ctx.stop();
+            }
+            ws::Message::Continuation(_) => {
                 ctx.stop();
             }
             ws::Message::Nop => (),
@@ -88,7 +97,7 @@ impl MyWebSocket {
                 return;
             }
 
-            ctx.ping("");
+            ctx.ping(b"");
         });
     }
 }
