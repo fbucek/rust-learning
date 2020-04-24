@@ -93,7 +93,7 @@ function doc() {
   cargo doc -p server --no-deps --open
 }
 
-function help() {
+function help() { 
     info "Build script v1.0"
     echo "start     Starts server in background"
     echo "stop      Kills server running in background"

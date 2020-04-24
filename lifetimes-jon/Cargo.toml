@@ -1,5 +1,5 @@
 [package]
-name = "lifetime-jon"
+name = "lifetimes-jon"
 version = "0.1.0"
 authors = ["Filip Bucek <fbucek@invloop.cz>"]
 edition = "2018"

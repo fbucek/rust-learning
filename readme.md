@@ -1,5 +1,9 @@
 # Install
 
+
+[![pipeline status](https://github.com/fbucek/rust-learining/workflows/build/badge.svg)](https://github.com/fbucek/rust-learining/)
+
+
 1. `curl https://sh.rustup.rs -sSf | sh`
 2. Install Visual Studio Code
 3. install `rust (rsl)` package in Visual Studio Code

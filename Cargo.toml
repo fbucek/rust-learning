@@ -14,7 +14,7 @@ members = [
     "hashmap",
     "hello_cargo",
     "lifetimes",
-    "lifetime-jon",
+    "lifetimes-jon",
     "loops",
     "minigrep",
     "person",
