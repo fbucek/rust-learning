@@ -1,0 +1,55 @@
+stages:
+- check
+- test
+- build
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  CARGO_TARGET_DIR: /home/gitlab-runner/documents/target
+
+check:
+  stage: check
+  tags:
+    - shell
+    - vpsfree
+  script:
+    - echo $CARGO_TARGET_DIR
+    - cargo --version
+
+test-debug:
+  stage: test
+  tags:
+    - shell
+    - vpsfree
+  script:
+    - cargo test --all
+
+# test-release:
+#   stage: test
+#   tags:
+#     - shell
+#   only:
+#     refs:
+#       - master
+#   script:
+#     - cargo test --release --all
+
+license-check:
+  stage: test
+  only:
+    refs:
+      - master
+  tags:
+    - shell
+    - vpsfree
+  script:
+    - cargo deny check
+
+
+all:
+  stage: build
+  tags:
+    - shell
+    - vpsfree
+  script:
+    - cargo build 
