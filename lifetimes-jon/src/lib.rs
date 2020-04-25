@@ -1,11 +1,11 @@
 #[derive(Debug)]
-pub struct StrSplit<'a> {
-    remainder: Option<&'a str>,
-    delimiter: &'a str,
+pub struct StrSplit<'haystack, 'delimiter> {
+    remainder: Option<&'haystack str>,
+    delimiter: &'delimiter str,
 }
 
-impl<'a> StrSplit<'a> { // Valid as long as references heystack both exists 
-    pub fn new(haystack: &'a str, delimiter: &'a str) -> Self {
+impl<'haystack, 'delimiter> StrSplit<'haystack, 'delimiter> { // Valid as long as references heystack both exists 
+    pub fn new(haystack: &'haystack str, delimiter: &'delimiter str) -> Self {
         Self {
             remainder: Some(haystack),
             delimiter,
@@ -14,32 +14,36 @@ impl<'a> StrSplit<'a> { // Valid as long as references heystack both exists
 }
 
 
-impl<'a> Iterator for StrSplit<'a> {
-    type Item = &'a str;
+impl<'haystack, 'delimiter> Iterator for StrSplit<'haystack, 'delimiter> {
+    type Item = &'haystack str;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(ref mut remainder) = self.remainder { // ref mut ( not moving out of self. ) Option<&'a str> -> &mut &'a str
+        let remainder = self.remainder.as_mut()?; // this modyfies 
+        // if let Some(ref mut remainder) = self.remainder { // ref mut ( not moving out of self. ) Option<&'a str> -> &mut &'a str
         // if let Some(remainder) = &mut self.remainder { // ekvivalent without ref mut
-            if let Some(next_delim) = remainder.find(self.delimiter) {
-                let until_delimiter = &remainder[..next_delim];
-                // remainder -> delmiter 
-                *remainder = &remainder[(next_delim + self.delimiter.len())..];
-                Some(until_delimiter)
+        if let Some(next_delim) = remainder.find(self.delimiter) {
+            let until_delimiter = &remainder[..next_delim];
+            // remainder -> delmiter 
+            *remainder = &remainder[(next_delim + self.delimiter.len())..];
+            Some(until_delimiter)
 
-            } else {
-                self.remainder.take() // return Some(T) leaving None or 
-                // 
-            }
         } else {
-            None
+            self.remainder.take() // return Some(T) leaving None or 
+            // 
         }
-        // } else if let Some(remainder) = self.remainder.take() {
-        //     // TODO: bug
-        //     Some(remainder)
-        // } else {
-        //     None
-        // }
     }
+}
+
+fn until_char<'s>(s: &'s str, c: char) -> &'s str {
+    let delim = format!("{}", c);
+    StrSplit::new(s, &delim)
+        .next()
+        .expect("StrSplit always gives at least one result")
+}
+
+#[test]
+fn until_char_test() {
+    assert_eq!(until_char("hello world", 'o'), "hell");
 }
 
 
