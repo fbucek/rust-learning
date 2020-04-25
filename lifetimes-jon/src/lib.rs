@@ -23,6 +23,14 @@ impl Delimiter for &str {
     }
 }
 
+impl Delimiter for char {
+    fn find_next(&self, s: &str) -> Option<(usize, usize)> {
+        s.char_indices()
+            .find(|(_, c)| c == self)
+            .map(|(start, _)| ( start, start + 1))
+    }
+}
+
 impl<'haystack, D> Iterator for StrSplit<'haystack, D>
 where
     D: Delimiter,
@@ -43,8 +51,7 @@ where
 }
 
 pub fn until_char(s: &str, c: char) -> &str { 
-    let delim = format!("{}", c);
-    StrSplit::new(s, &*delim)
+    StrSplit::new(s, c)
         .next()
         .expect("StrSplit always gives at least one result")
 }
