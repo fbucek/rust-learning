@@ -14,7 +14,7 @@ impl<'haystack, 'delimiter> StrSplit<'haystack, 'delimiter> { // Valid as long a
 }
 
 
-impl<'haystack, 'delimiter> Iterator for StrSplit<'haystack, 'delimiter> {
+impl<'haystack> Iterator for StrSplit<'haystack, '_> {
     type Item = &'haystack str;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -34,7 +34,7 @@ impl<'haystack, 'delimiter> Iterator for StrSplit<'haystack, 'delimiter> {
     }
 }
 
-fn until_char<'s>(s: &'s str, c: char) -> &'s str {
+fn until_char(s: &str, c: char) -> &str { 
     let delim = format!("{}", c);
     StrSplit::new(s, &delim)
         .next()
