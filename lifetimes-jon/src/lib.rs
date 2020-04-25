@@ -27,7 +27,7 @@ impl Delimiter for char {
     fn find_next(&self, s: &str) -> Option<(usize, usize)> {
         s.char_indices()
             .find(|(_, c)| c == self)
-            .map(|(start, _)| ( start, start + 1))
+            .map(|(start, c)| ( start, start + c.len_utf8()))
     }
 }
 
