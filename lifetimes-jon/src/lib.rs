@@ -1,11 +1,11 @@
 #[derive(Debug)]
-pub struct StrSplit<'haystack, 'delimiter> {
+pub struct StrSplit<'haystack, D> {
     remainder: Option<&'haystack str>,
-    delimiter: &'delimiter str,
+    delimiter: D,
 }
 
-impl<'haystack, 'delimiter> StrSplit<'haystack, 'delimiter> { // Valid as long as references heystack both exists 
-    pub fn new(haystack: &'haystack str, delimiter: &'delimiter str) -> Self {
+impl<'haystack, D> StrSplit<'haystack, D> { // Valid as long as references heystack both exists 
+    pub fn new(haystack: &'haystack str, delimiter: D) -> Self {
         Self {
             remainder: Some(haystack),
             delimiter,
@@ -13,20 +13,28 @@ impl<'haystack, 'delimiter> StrSplit<'haystack, 'delimiter> { // Valid as long a
     }
 }
 
+pub trait Delimiter {
+    fn find_next(&self, s: &str) -> Option<(usize, usize)>;
+}
 
-impl<'haystack> Iterator for StrSplit<'haystack, '_> {
+impl Delimiter for &str {
+    fn find_next(&self, s: &str) -> Option<(usize, usize)> {
+        s.find(self).map(|start| ( start, start + self.len()))
+    }
+}
+
+impl<'haystack, D> Iterator for StrSplit<'haystack, D>
+where
+    D: Delimiter,
+{
     type Item = &'haystack str;
 
     fn next(&mut self) -> Option<Self::Item> {
         let remainder = self.remainder.as_mut()?; // this modyfies 
-        // if let Some(ref mut remainder) = self.remainder { // ref mut ( not moving out of self. ) Option<&'a str> -> &mut &'a str
-        // if let Some(remainder) = &mut self.remainder { // ekvivalent without ref mut
-        if let Some(next_delim) = remainder.find(self.delimiter) {
-            let until_delimiter = &remainder[..next_delim];
-            // remainder -> delmiter 
-            *remainder = &remainder[(next_delim + self.delimiter.len())..];
+        if let Some((delim_start, delim_end)) = self.delimiter.find_next(remainder) {
+            let until_delimiter = &remainder[..delim_start];
+            *remainder = &remainder[delim_end..];
             Some(until_delimiter)
-
         } else {
             self.remainder.take() // return Some(T) leaving None or 
             // 
@@ -34,9 +42,9 @@ impl<'haystack> Iterator for StrSplit<'haystack, '_> {
     }
 }
 
-fn until_char(s: &str, c: char) -> &str { 
+pub fn until_char(s: &str, c: char) -> &str { 
     let delim = format!("{}", c);
-    StrSplit::new(s, &delim)
+    StrSplit::new(s, &*delim)
         .next()
         .expect("StrSplit always gives at least one result")
 }
