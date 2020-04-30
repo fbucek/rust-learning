@@ -91,7 +91,7 @@ fn main() {
 
     notify(&article2);
 
-    let mut v: Vec<Box<&Summary>> = Vec::new();
+    let mut v: Vec<Box<&dyn Summary>> = Vec::new();
 
     v.push(Box::new(&tweet));
     v.push(Box::new(&article));
@@ -101,7 +101,7 @@ fn main() {
         // notify(sum);
     }
 
-    let mut vec: Vec<&Summary> = Vec::new();
+    let mut vec: Vec<&dyn Summary> = Vec::new();
     vec.push(&tweet);
     vec.push(&article);
 
