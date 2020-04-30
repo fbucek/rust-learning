@@ -3,26 +3,32 @@
 #[cfg(target_os = "linux")]
 use std::i32;
 
+///```compile_fail
+/// let x: Vec<u32> = vecmacro::avec![42, "foo"];
+///```
+#[allow(dead_code)]
+struct CompileFailTest;
 
 macro_rules! avec {
-    () => { Vec::new() };
+    // () => { Vec::new() };
     // $($element:expr),+   -- for $element:expr divided by ',' + ( at least one )
     // $(,)?                -- ',' can be there on  --> trailing ,
-    ($($element:expr),+ $(,)?) => {{
+    ($($element:expr),* $(,)?) => {{
+        #[allow(unused_mut)]
         let mut vs = Vec::new();
         // Smiliar syntax
         $( // for array
             vs.push($element);
-        )+ // do repetition
+        )* // do repetition
         vs
     }};
 
-    ($($element:expr),+ $(,)?) => {{
+    ($element:expr; $count:expr) => {{
         let mut vs = Vec::new();
-        // Smiliar syntax
-        $( // for array
-            vs.push($element);
-        )+ // do repetition
+        let x = $element; 
+        for _ in 0..$count {
+            vs.push(x.clone());
+        }
         vs
     }};
 
@@ -88,8 +94,21 @@ fn max_value_test() {
 
 #[test]
 fn clone_2() {
-    let x: Vec<&'static str> = avec!["first string", "second string",];
+    let x: Vec<i32> = avec![42; 2];
     assert_eq!(x.len(), 2);
-    assert_eq!(x[0], "first string");
-    assert_eq!(x[1], "second string");
+    assert_eq!(x[0], 42);
+    assert_eq!(x[1], 42);
+    let x: Vec<i32> = avec!(42; 12);
+    assert_eq!(x.len(), 12);
+}
+
+#[test]
+fn clone_2_nonliteral() {
+    let mut y = Some(42);
+    let x: Vec<i32> = avec![y.take().unwrap(); 2];
+    assert_eq!(x.len(), 2);
+    assert_eq!(x[0], 42);
+    assert_eq!(x[1], 42);
+    let x: Vec<i32> = avec!(42; 12);
+    assert_eq!(x.len(), 12);
 }
