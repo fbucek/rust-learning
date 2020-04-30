@@ -1,4 +1,5 @@
-#[allow(unused_macros)]
+#![allow(unused_macros)]  // #! -> for all # only for next
+
 macro_rules! avec {
     () => { Vec::new() };
     // $($element:expr),+   -- for $element:expr divided by ',' + ( at least one )
@@ -12,6 +13,22 @@ macro_rules! avec {
         vs
     }};
 }
+
+trait MaxValue {
+    fn max_value() -> Self;
+}
+
+macro_rules! max_impl {
+    ($t:ty) => {
+        impl $crate::MaxValue for $t {
+            fn max_value() -> Self {
+                <$t>::MAX
+            }
+        }
+    }
+}
+
+max_impl!(i32);
 
 #[test]
 fn empty_vec() {
@@ -50,4 +67,10 @@ fn trailing() {
     assert_eq!(x.len(), 2);
     assert_eq!(x[0], "first string");
     assert_eq!(x[1], "second string");
+}
+
+#[test]
+fn max_value_test() {
+    let max: i32 = MaxValue::max_value();
+    assert_eq!(max, <i32>::MAX);
 }
