@@ -24,7 +24,8 @@ macro_rules! avec {
     }};
 
     ($element:expr; $count:expr) => {{
-        let mut vs = Vec::new();
+        let count = $count;
+        let mut vs = Vec::with_capacity(count);
         let x = $element; 
         for _ in 0..$count {
             vs.push(x.clone());
