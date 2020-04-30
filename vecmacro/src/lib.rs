@@ -1,15 +1,14 @@
 #[allow(unused_macros)]
 macro_rules! avec {
     () => { Vec::new() };
-    ($element:expr) => {{
+    // $($element:expr),+   -- for $element:expr divided by ',' + ( at least one )
+    // $(,)?                -- ',' can be there on  --> trailing ,
+    ($($element:expr),+ $(,)?) => {{
         let mut vs = Vec::new();
-        vs.push($element);
-        vs
-    }};
-    ($e1:expr, $e2:expr) => {{
-        let mut vs = Vec::new();
-        vs.push($e1);
-        vs.push($e2);
+        // Smiliar syntax 
+        $( // for array 
+            vs.push($element);
+        )+ // do repetition
         vs
     }};
 }
@@ -40,4 +39,15 @@ fn double() {
     assert_eq!(x[1], 12);
     let x: Vec<i32> = avec!(42, 12);
     assert_eq!(x.len(), 2);
+}
+
+#[test]
+fn trailing() {
+    let x: Vec<&'static str> = avec![
+        "first string", 
+        "second string", 
+        ];
+    assert_eq!(x.len(), 2);
+    assert_eq!(x[0], "first string");
+    assert_eq!(x[1], "second string");
 }
