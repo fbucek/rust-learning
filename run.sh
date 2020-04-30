@@ -80,7 +80,7 @@ function wtest() {
 }
 
 function watch() {
-  cargo watch -i data -i cfg -s 'cargo test --all -- --nocapture;cargo run'
+  cargo watch -i data -i cfg -s 'cargo test --all -- --nocapture;cargo build'
 }
 
 function wcheck() {

@@ -1,4 +1,4 @@
-#![allow(unused_macros)]  // #! -> for all # only for next
+#![allow(unused_macros)] // #! -> for all # only for next
 
 macro_rules! avec {
     () => { Vec::new() };
@@ -6,12 +6,22 @@ macro_rules! avec {
     // $(,)?                -- ',' can be there on  --> trailing ,
     ($($element:expr),+ $(,)?) => {{
         let mut vs = Vec::new();
-        // Smiliar syntax 
-        $( // for array 
+        // Smiliar syntax
+        $( // for array
             vs.push($element);
         )+ // do repetition
         vs
     }};
+
+    ($($element:expr),+ $(,)?) => {{
+        let mut vs = Vec::new();
+        // Smiliar syntax
+        $( // for array
+            vs.push($element);
+        )+ // do repetition
+        vs
+    }};
+
 }
 
 trait MaxValue {
@@ -25,7 +35,7 @@ macro_rules! max_impl {
                 <$t>::MAX
             }
         }
-    }
+    };
 }
 
 max_impl!(i32);
@@ -60,10 +70,7 @@ fn double() {
 
 #[test]
 fn trailing() {
-    let x: Vec<&'static str> = avec![
-        "first string", 
-        "second string", 
-        ];
+    let x: Vec<&'static str> = avec!["first string", "second string",];
     assert_eq!(x.len(), 2);
     assert_eq!(x[0], "first string");
     assert_eq!(x[1], "second string");
@@ -73,4 +80,12 @@ fn trailing() {
 fn max_value_test() {
     let max: i32 = MaxValue::max_value();
     assert_eq!(max, <i32>::MAX);
+}
+
+#[test]
+fn clone_2() {
+    let x: Vec<&'static str> = avec!["first string", "second string",];
+    assert_eq!(x.len(), 2);
+    assert_eq!(x[0], "first string");
+    assert_eq!(x[1], "second string");
 }
