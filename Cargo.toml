@@ -20,6 +20,7 @@ members = [
     "reference-cycle",
     "smart-pointers",
     "strings",
+    "vecmacro",
     # "trait_bench", # nightly only
     # "trait_bench_orig", # nightly only
     "testing",
