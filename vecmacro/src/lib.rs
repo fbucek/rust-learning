@@ -1,5 +1,9 @@
 #![allow(unused_macros)] // #! -> for all # only for next
 
+#[cfg(target_os = "linux")]
+use std::i32;
+
+
 macro_rules! avec {
     () => { Vec::new() };
     // $($element:expr),+   -- for $element:expr divided by ',' + ( at least one )
