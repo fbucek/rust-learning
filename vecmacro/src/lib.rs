@@ -1,10 +1,7 @@
 #![allow(unused_macros)] // #! -> for all # only for next
 
-#[cfg(target_os = "linux")]
-use std::i32;
-
 ///```compile_fail
-/// let x: Vec<u32> = vecmacro::avec![42, "foo"];
+/// let x: Vec<i32> = vecmacro::avec![42, "foo"];
 ///```
 #[allow(dead_code)]
 struct CompileFailTest;
@@ -33,21 +30,15 @@ macro_rules! avec {
 
 }
 
-trait MaxValue {
-    fn max_value() -> Self;
-}
-
 macro_rules! max_impl {
     ($t:ty) => {
         impl $crate::MaxValue for $t {
             fn max_value() -> Self {
-                <$t>::MAX
+                <$t>::max_value()
             }
         }
     };
 }
-
-max_impl!(i32);
 
 #[test]
 fn empty_vec() {
@@ -83,12 +74,6 @@ fn trailing() {
     assert_eq!(x.len(), 2);
     assert_eq!(x[0], "first string");
     assert_eq!(x[1], "second string");
-}
-
-#[test]
-fn max_value_test() {
-    let max: i32 = MaxValue::max_value();
-    assert_eq!(max, <i32>::MAX);
 }
 
 #[test]
