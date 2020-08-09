@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 use std::sync::{Arc, Condvar, Mutex};
 
+
 pub struct Sender<T> {
     shared: Arc<Shared<T>>,
 }
@@ -50,7 +51,7 @@ impl<T> Receiver<T> {
                 Some(t) => return Some(t),
                 None if inner.senders == 0  => return None,
                 None => {
-                    inner = self.shared.available.wait(inner).unwrap();
+                    self.shared.available.wait(inner).unwrap();
                 }
             }
         }
@@ -103,8 +104,7 @@ mod tests {
     #[test]
     fn closed() {
         let (sender, mut receiver) = channel::<()>();
-        let _ = sender;
+        drop(sender);
         assert_eq!(receiver.recv(), None);
     }
-
 }
