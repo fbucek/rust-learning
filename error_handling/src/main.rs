@@ -1,4 +1,3 @@
-use errlib;
 
 fn main() {
     let filename = "hello.txt";
