@@ -9,6 +9,7 @@ members = [
     "collections",
     "error",
     "error_handling",
+    "gj-panama",
     "generic-types",
     "guessing_game",
     "hashmap",
