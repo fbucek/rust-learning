@@ -41,17 +41,28 @@ impl<T> Sender<T> {
 
 pub struct Receiver<T> {
     shared: Arc<Shared<T>>, 
+    buffer: VecDeque<T>,
 }
 
 impl<T> Receiver<T> {
     pub fn recv(&mut self) -> Option<T> {
+        // Buffer has some values from previsous receive -> use that
+        if let Some(t) = self.buffer.pop_front() {
+            return Some(t);
+        }
+
+        // When no buffer
+        let mut inner = self.shared.inner.lock().unwrap();
         loop {
-            let mut inner = self.shared.inner.lock().unwrap();
             match inner.queue.pop_front() {
-                Some(t) => return Some(t),
+                Some(t) => {
+                    // Rest of queue swap to buffer
+                    std::mem::swap(&mut self.buffer, &mut inner.queue);
+                    return Some(t);
+                }
                 None if inner.senders == 0  => return None,
                 None => {
-                    self.shared.available.wait(inner).unwrap();
+                    inner = self.shared.available.wait(inner).unwrap();
                 }
             }
         }
@@ -92,6 +103,7 @@ pub fn channel<T>() -> (Sender<T>, Receiver<T>) {
         },
         Receiver {
             shared: shared.clone(),
+            buffer: VecDeque::default(),
         }
     )
 }
